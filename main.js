@@ -35,7 +35,7 @@ function setupAutoUpdater() {
     });
 
     autoUpdater.on('update-not-available', () => {
-        if (mainWindow) mainWindow.webContents.send('update-status', 'latest');
+        if (mainWindow) mainWindow.webContents.send('update-status', 'update-not-available');
     });
 
     autoUpdater.on('download-progress', (progress) => {
@@ -43,6 +43,7 @@ function setupAutoUpdater() {
     });
 
     autoUpdater.on('update-downloaded', () => {
+        if (mainWindow) mainWindow.webContents.send('update-status', 'update-downloaded');
         dialog.showMessageBox(mainWindow, {
             type: 'info',
             title: 'อัปเดตพร้อมแล้ว!',

@@ -1321,7 +1321,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.1.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.2.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1420,6 +1420,29 @@
                             </tr>
                         </thead>
                         <tbody id="ds-compare-body">
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px;">No
+                                    delivery data yet. Place orders to start tracking.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Category Performance Breakdown -->
+                <div class="stats-box">
+                    <h4 style="margin-bottom:8px;">🏷️ Category Performance Breakdown</h4>
+                    <table class="ds-compare-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Orders</th>
+                                <th>Avg Time</th>
+                                <th>⚡ Fastest Service</th>
+                                <th>🏆 Best Provider</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ds-category-body">
                             <tr>
                                 <td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px;">No
                                     delivery data yet. Place orders to start tracking.</td>
@@ -2273,6 +2296,51 @@
                         <td class="${speedClass}">${formatDuration(d.avg)}</td>
                         <td style="color:var(--green);">${formatDuration(d.fast)}</td>
                         <td style="color:var(--red);">${formatDuration(d.slow)}</td>
+                        <td>${stars}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Category Performance Breakdown
+            const catBody = document.getElementById('ds-category-body');
+            const categories = ['Likes', 'Views', 'Followers', 'Comments', 'Shares', 'Saves'];
+            const catIcons = { Likes: '❤️', Views: '👁️', Followers: '👥', Comments: '💬', Shares: '🔄', Saves: '📌' };
+            const byCat = {};
+            categories.forEach(cat => {
+                const catRecs = records.filter(r => {
+                    const svcName = (r.serviceName || '').toLowerCase();
+                    const catKey = cat.toLowerCase();
+                    return svcName.includes(catKey) || svcName.includes(catKey.slice(0, -1));
+                });
+                if (catRecs.length > 0) {
+                    const avg = catRecs.reduce((s, r) => s + r.duration, 0) / catRecs.length;
+                    const fastestRec = catRecs.reduce((min, r) => r.duration < min.duration ? r : min, catRecs[0]);
+                    // Best provider = provider with lowest avg time in this category
+                    const provAvg = {};
+                    catRecs.forEach(r => {
+                        if (!provAvg[r.provider]) provAvg[r.provider] = { total: 0, count: 0 };
+                        provAvg[r.provider].total += r.duration;
+                        provAvg[r.provider].count++;
+                    });
+                    const bestProv = Object.entries(provAvg).reduce((a, b) =>
+                        (a[1].total / a[1].count) < (b[1].total / b[1].count) ? a : b
+                    );
+                    byCat[cat] = { count: catRecs.length, avg, fastestRec, bestProvider: bestProv[0] };
+                }
+            });
+
+            if (Object.keys(byCat).length > 0) {
+                const catMaxAvg = Math.max(...Object.values(byCat).map(v => v.avg), 1);
+                catBody.innerHTML = Object.entries(byCat).map(([cat, d]) => {
+                    const speedClass = d.avg <= catMaxAvg * 0.5 ? 'ds-fastest' : d.avg > catMaxAvg * 0.8 ? 'ds-slow' : 'ds-medium';
+                    const stars = d.avg <= catMaxAvg * 0.5 ? '⚡ Fast' : d.avg > catMaxAvg * 0.8 ? '🐢 Slow' : '👍 Good';
+                    const dotCls = d.bestProvider === 'iPlusView' ? 'ipv' : d.bestProvider === 'KMM' ? 'kmm' : d.bestProvider === 'Ads4U' ? 'a4u' : d.bestProvider === 'NewLike' ? 'nlk' : 'mlk';
+                    return `<tr>
+                        <td>${catIcons[cat] || '📦'} ${cat}</td>
+                        <td>${d.count}</td>
+                        <td class="${speedClass}">${formatDuration(d.avg)}</td>
+                        <td style="color:var(--cyan);">#${d.fastestRec.serviceId} <span style="color:var(--text-muted);font-size:10px;">(${d.fastestRec.provider})</span></td>
+                        <td><span class="provider-dot ${dotCls}"></span> ${d.bestProvider}</td>
                         <td>${stars}</td>
                     </tr>`;
                 }).join('');
