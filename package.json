@@ -1,0 +1,53 @@
+{
+    "name": "tiktokboost",
+    "version": "1.1.0",
+    "description": "TikTokBoost — SMM Panel Desktop App รวม 5 เว็บ SMM ในโปรแกรมเดียว",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron . --dev",
+        "build": "electron-builder --win",
+        "publish": "electron-builder --win --publish always"
+    },
+    "build": {
+        "appId": "com.tiktokboost.app",
+        "productName": "TikTok Boost Manager",
+        "directories": {
+            "output": "dist"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "pitipat123",
+            "repo": "tiktokboost"
+        },
+        "win": {
+            "target": "nsis",
+            "icon": "assets/icon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "TikTok Boost Manager",
+            "installerIcon": "assets/icon.ico",
+            "uninstallerIcon": "assets/icon.ico",
+            "installerHeaderIcon": "assets/icon.ico"
+        },
+        "files": [
+            "**/*",
+            "!dist/**",
+            "!node_modules/.cache/**"
+        ]
+    },
+    "author": "TikTokBoost",
+    "license": "MIT",
+    "dependencies": {
+        "electron-store": "^8.1.0",
+        "electron-updater": "^6.1.7"
+    },
+    "devDependencies": {
+        "electron": "^28.0.0",
+        "electron-builder": "^24.9.1"
+    }
+}

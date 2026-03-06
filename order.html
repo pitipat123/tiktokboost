@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สั่งซื้อบริการ — TikTokBoost</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:var(--space-md);">
+                <button class="navbar-toggle" id="sidebarToggle" style="display:inline-flex;"
+                    aria-label="Menu">☰</button>
+                <a href="index.html" class="navbar-brand">
+                    <span class="logo-icon">🚀</span>
+                    TikTokBoost
+                </a>
+            </div>
+            <div class="navbar-actions">
+                <span style="color:var(--text-secondary);font-size:0.85rem;">💰 ฿1,250.50</span>
+                <a href="topup.html" class="btn btn-primary btn-sm">เติมเงิน</a>
+                <a href="index.html" class="btn btn-secondary btn-sm"
+                    onclick="localStorage.removeItem('tiktokboost_user')">ออกจากระบบ</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section-title">หลัก</div>
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="sidebar-item"><span class="icon">📊</span> Dashboard</a>
+                <a href="order.html" class="sidebar-item active"><span class="icon">🛒</span> สั่งซื้อบริการ</a>
+                <a href="#presets" class="sidebar-item"><span class="icon">📋</span> พรีเซ็ต</a>
+                <a href="orders.html" class="sidebar-item"><span class="icon">📦</span> ประวัติออเดอร์</a>
+            </nav>
+            <div class="sidebar-section-title">การเงิน</div>
+            <nav class="sidebar-menu">
+                <a href="topup.html" class="sidebar-item"><span class="icon">💳</span> เติมเงิน</a>
+            </nav>
+            <div class="sidebar-section-title">เครื่องมือ</div>
+            <nav class="sidebar-menu">
+                <a href="dashboard.html#stats-section" class="sidebar-item"><span class="icon">📈</span> สถิติจัดส่ง</a>
+                <a href="api.html" class="sidebar-item"><span class="icon">🔗</span> API</a>
+                <a href="dashboard.html#api-settings" class="sidebar-item"><span class="icon">🔑</span> ตั้งค่า API
+                    Key</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1>🛒 สั่งซื้อบริการ</h1>
+                <p>เลือกบริการ ใส่ลิงก์ กำหนดจำนวน แล้วสั่งซื้อได้ทันที หรือใช้พรีเซ็ตเพื่อสั่งซ้ำเร็วขึ้น</p>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 380px;gap:var(--space-xl);align-items:start;">
+                <!-- Order Form -->
+                <div class="glass-card order-form-card">
+                    <h3 style="margin-bottom:var(--space-xl);font-size:1.15rem;">📝 ฟอร์มสั่งซื้อ</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">หมวดหมู่</label>
+                        <select class="form-select" id="orderCategory" onchange="updateServices()">
+                            <option value="tiktok">🎵 TikTok</option>
+                            <option value="facebook">📘 Facebook</option>
+                            <option value="instagram">📸 Instagram</option>
+                            <option value="youtube">📺 YouTube</option>
+                            <option value="twitter">🐦 Twitter / X</option>
+                            <option value="line">💚 LINE OA</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">เลือกบริการ</label>
+                        <select class="form-select" id="orderService" onchange="updatePriceCalc()">
+                            <option value="tiktok-views" data-rate="0.5" data-min="100" data-max="1000000"
+                                data-speed="0-5 นาที" data-refill="yes">TikTok วิว — ฿0.50/1K • ส่ง 0-5 นาที • Refill 30
+                                วัน</option>
+                            <option value="tiktok-likes" data-rate="3" data-min="50" data-max="50000"
+                                data-speed="0-10 นาที" data-refill="yes">TikTok ไลค์ — ฿3/1K • ส่ง 0-10 นาที • Refill 30
+                                วัน</option>
+                            <option value="tiktok-followers" data-rate="15" data-min="100" data-max="100000"
+                                data-speed="5-30 นาที" data-refill="yes">TikTok ผู้ติดตาม — ฿15/1K • ส่ง 5-30 นาที •
+                                Refill 30 วัน</option>
+                            <option value="tiktok-shares" data-rate="5" data-min="100" data-max="50000"
+                                data-speed="0-15 นาที" data-refill="no">TikTok แชร์ — ฿5/1K • ส่ง 0-15 นาที</option>
+                            <option value="tiktok-comments" data-rate="50" data-min="10" data-max="5000"
+                                data-speed="10-60 นาที" data-refill="no">TikTok คอมเม้นท์ — ฿50/1K • ส่ง 10-60 นาที
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">ลิงก์</label>
+                        <input type="url" id="orderLink" class="form-input"
+                            placeholder="https://www.tiktok.com/@username/video/...">
+                        <p style="color:var(--text-muted);font-size:0.75rem;margin-top:4px;">วางลิงก์โพสต์
+                            หรือโปรไฟล์ที่ต้องการ</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">จำนวน</label>
+                        <input type="number" id="orderQuantity" class="form-input" value="1000" min="100" max="1000000"
+                            onchange="updatePriceCalc()" oninput="updatePriceCalc()">
+                        <p style="color:var(--text-muted);font-size:0.75rem;margin-top:4px;" id="minMaxLabel">ขั้นต่ำ:
+                            100 — สูงสุด: 1,000,000</p>
+                    </div>
+
+                    <!-- Price Summary -->
+                    <div class="order-summary">
+                        <div class="order-summary-row">
+                            <span>บริการ</span>
+                            <span id="summaryService">TikTok วิว</span>
+                        </div>
+                        <div class="order-summary-row">
+                            <span>จำนวน</span>
+                            <span id="summaryQty">1,000</span>
+                        </div>
+                        <div class="order-summary-row">
+                            <span>ราคาต่อ 1K</span>
+                            <span id="summaryRate">฿0.50</span>
+                        </div>
+                        <div class="order-summary-row">
+                            <span>เวลาจัดส่งโดยประมาณ</span>
+                            <span id="summarySpeed" style="color:var(--green-500);">0-5 นาที</span>
+                        </div>
+                        <div class="order-summary-row total">
+                            <span>💰 ราคารวม</span>
+                            <span id="orderTotal" class="text-gradient">฿0.50</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:var(--space-md);margin-top:var(--space-lg);">
+                        <button class="btn btn-primary btn-lg" style="flex:1;" onclick="submitOrder()">🚀
+                            สั่งซื้อ</button>
+                        <button class="btn btn-secondary" id="savePresetBtn" title="บันทึกเป็นพรีเซ็ต">📋
+                            บันทึกพรีเซ็ต</button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Presets + Info -->
+                <div>
+                    <!-- Presets -->
+                    <div class="glass-card" id="presets" style="padding:var(--space-xl);margin-bottom:var(--space-lg);">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                            <h3 style="font-size:1rem;">📋 พรีเซ็ตของฉัน</h3>
+                            <span style="font-size:0.75rem;color:var(--text-muted);" id="presetCount">0 รายการ</span>
+                        </div>
+                        <div id="presetList" class="preset-list">
+                            <!-- Rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Service Info -->
+                    <div class="glass-card" style="padding:var(--space-xl);">
+                        <h3 style="font-size:1rem;margin-bottom:var(--space-md);">ℹ️ ข้อมูลบริการ</h3>
+                        <div style="font-size:0.85rem;color:var(--text-secondary);line-height:1.8;">
+                            <p>⚡ <strong>ความเร็ว:</strong> <span id="infoSpeed">0-5 นาที</span></p>
+                            <p>🔄 <strong>Refill:</strong> <span id="infoRefill">30 วัน</span></p>
+                            <p>📊 <strong>คุณภาพ:</strong> บัญชีจริง คุณภาพสูง</p>
+                            <p>🔒 <strong>ปลอดภัย:</strong> ไม่ต้องใช้รหัสผ่าน</p>
+                            <p
+                                style="margin-top:var(--space-md);padding:var(--space-sm) var(--space-md);background:rgba(16,185,129,0.1);border-radius:var(--radius-sm);color:var(--green-500);">
+                                ✅ ระบบเชื่อมต่อ API อัตโนมัติ — คำสั่งจะถูกส่งทันที
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Service data by category
+        const serviceData = {
+            tiktok: [
+                { id: 'tiktok-views', name: 'TikTok วิว', rate: 0.5, min: 100, max: 1000000, speed: '0-5 นาที', refill: 'yes' },
+                { id: 'tiktok-likes', name: 'TikTok ไลค์', rate: 3, min: 50, max: 50000, speed: '0-10 นาที', refill: 'yes' },
+                { id: 'tiktok-followers', name: 'TikTok ผู้ติดตาม', rate: 15, min: 100, max: 100000, speed: '5-30 นาที', refill: 'yes' },
+                { id: 'tiktok-shares', name: 'TikTok แชร์', rate: 5, min: 100, max: 50000, speed: '0-15 นาที', refill: 'no' },
+                { id: 'tiktok-comments', name: 'TikTok คอมเม้นท์', rate: 50, min: 10, max: 5000, speed: '10-60 นาที', refill: 'no' },
+            ],
+            facebook: [
+                { id: 'fb-likes', name: 'FB ไลค์โพสต์', rate: 8, min: 50, max: 100000, speed: '0-10 นาที', refill: 'yes' },
+                { id: 'fb-followers', name: 'FB ผู้ติดตาม/ไลค์เพจ', rate: 20, min: 100, max: 50000, speed: '5-30 นาที', refill: 'yes' },
+                { id: 'fb-shares', name: 'FB แชร์โพสต์', rate: 15, min: 50, max: 10000, speed: '0-15 นาที', refill: 'no' },
+                { id: 'fb-live', name: 'FB คนดูไลฟ์สด', rate: 25, min: 50, max: 10000, speed: '0-5 นาที', refill: 'no' },
+            ],
+            instagram: [
+                { id: 'ig-followers', name: 'IG ผู้ติดตาม', rate: 12, min: 100, max: 100000, speed: '5-30 นาที', refill: 'yes' },
+                { id: 'ig-likes', name: 'IG ไลค์', rate: 5, min: 50, max: 50000, speed: '0-10 นาที', refill: 'yes' },
+                { id: 'ig-views', name: 'IG วิว Reels/Stories', rate: 2, min: 100, max: 1000000, speed: '0-5 นาที', refill: 'no' },
+                { id: 'ig-comments', name: 'IG คอมเม้นท์', rate: 60, min: 10, max: 5000, speed: '15-60 นาที', refill: 'no' },
+            ],
+            youtube: [
+                { id: 'yt-views', name: 'YT วิว', rate: 10, min: 500, max: 1000000, speed: '5-60 นาที', refill: 'yes' },
+                { id: 'yt-subscribers', name: 'YT Subscribers', rate: 50, min: 100, max: 50000, speed: '10-60 นาที', refill: 'yes' },
+                { id: 'yt-likes', name: 'YT ไลค์', rate: 15, min: 50, max: 50000, speed: '5-30 นาที', refill: 'yes' },
+            ],
+            twitter: [
+                { id: 'tw-followers', name: 'X ผู้ติดตาม', rate: 18, min: 100, max: 50000, speed: '5-30 นาที', refill: 'yes' },
+                { id: 'tw-likes', name: 'X ไลค์', rate: 8, min: 50, max: 50000, speed: '0-15 นาที', refill: 'yes' },
+                { id: 'tw-retweets', name: 'X รีทวีต', rate: 12, min: 50, max: 50000, speed: '0-15 นาที', refill: 'no' },
+            ],
+            line: [
+                { id: 'line-friends', name: 'LINE OA เพิ่มเพื่อน', rate: 30, min: 100, max: 10000, speed: '30-120 นาที', refill: 'no' },
+            ],
+        };
+
+        function updateServices() {
+            const category = document.getElementById('orderCategory').value;
+            const serviceSelect = document.getElementById('orderService');
+            const services = serviceData[category] || [];
+
+            serviceSelect.innerHTML = services.map(s =>
+                `<option value="${s.id}" data-rate="${s.rate}" data-min="${s.min}" data-max="${s.max}" data-speed="${s.speed}" data-refill="${s.refill}">
+          ${s.name} — ฿${s.rate}/1K • ส่ง ${s.speed}${s.refill === 'yes' ? ' • Refill 30 วัน' : ''}
+        </option>`
+            ).join('');
+
+            updatePriceCalc();
+        }
+
+        function updatePriceCalc() {
+            const serviceSelect = document.getElementById('orderService');
+            const quantityInput = document.getElementById('orderQuantity');
+            const selected = serviceSelect.options[serviceSelect.selectedIndex];
+
+            if (!selected) return;
+
+            const rate = parseFloat(selected.dataset.rate || 0);
+            const min = parseInt(selected.dataset.min || 100);
+            const max = parseInt(selected.dataset.max || 1000000);
+            const speed = selected.dataset.speed || '';
+            const refill = selected.dataset.refill || 'no';
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = (rate * quantity / 1000);
+
+            document.getElementById('summaryService').textContent = selected.text.split(' — ')[0];
+            document.getElementById('summaryQty').textContent = quantity.toLocaleString();
+            document.getElementById('summaryRate').textContent = '฿' + rate.toFixed(2);
+            document.getElementById('summarySpeed').textContent = speed;
+            document.getElementById('orderTotal').textContent = '฿' + total.toFixed(2);
+            document.getElementById('minMaxLabel').textContent = `ขั้นต่ำ: ${min.toLocaleString()} — สูงสุด: ${max.toLocaleString()}`;
+            document.getElementById('infoSpeed').textContent = speed;
+            document.getElementById('infoRefill').textContent = refill === 'yes' ? '30 วัน ✅' : 'ไม่มี';
+
+            // Update preset count
+            const presets = JSON.parse(localStorage.getItem('tiktokboost_presets') || '[]');
+            const countEl = document.getElementById('presetCount');
+            if (countEl) countEl.textContent = presets.length + ' รายการ';
+        }
+
+        function submitOrder() {
+            const link = document.getElementById('orderLink').value;
+            if (!link) {
+                alert('กรุณาใส่ลิงก์');
+                return;
+            }
+
+            const apiUrl = localStorage.getItem('tiktokboost_api_url');
+            const apiKey = localStorage.getItem('tiktokboost_api_key');
+            const serviceSelect = document.getElementById('orderService');
+            const quantity = document.getElementById('orderQuantity').value;
+            const selected = serviceSelect.options[serviceSelect.selectedIndex];
+
+            if (apiUrl && apiKey) {
+                // Send to real SMM Provider API
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        key: apiKey,
+                        action: 'add',
+                        service: selected.value,
+                        link: link,
+                        quantity: parseInt(quantity)
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.order) {
+                            alert(`✅ สั่งซื้อสำเร็จ!\nOrder ID: ${data.order}\nระบบกำลังดำเนินการ...`);
+                        } else if (data.error) {
+                            alert(`❌ Error: ${data.error}`);
+                        } else {
+                            alert('✅ คำสั่งถูกส่งไปยัง Provider แล้ว!');
+                        }
+                    })
+                    .catch(err => {
+                        alert('❌ ไม่สามารถเชื่อมต่อ Provider: ' + err.message);
+                    });
+            } else {
+                // Demo mode
+                const orderId = Math.floor(Math.random() * 90000) + 10000;
+                alert(`✅ สั่งซื้อสำเร็จ! (Demo Mode)\n\nOrder #${orderId}\n${selected.text.split(' — ')[0]}\nจำนวน: ${parseInt(quantity).toLocaleString()}\nราคา: ${document.getElementById('orderTotal').textContent}\n\n⚠️ เชื่อมต่อ API Key ที่ Dashboard เพื่อส่งคำสั่งจริง`);
+            }
+        }
+
+        // Init
+        updatePriceCalc();
+        renderPresets();
+    </script>
+</body>
+
+</html>

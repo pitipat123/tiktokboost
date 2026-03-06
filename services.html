@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บริการทั้งหมด — TikTokBoost</title>
+    <meta name="description" content="รายการบริการปั้มไลค์ เพิ่มผู้ติดตาม วิว สำหรับทุกแพลตฟอร์ม ราคาถูกที่สุด">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+    <style>
+        .filter-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1.25rem;
+            border-radius: var(--radius-full);
+            background: var(--bg-glass);
+            border: 1px solid var(--bg-glass-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            font-family: var(--font-primary);
+            transition: all var(--transition-fast);
+        }
+
+        .filter-tab:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--text-primary);
+        }
+
+        .filter-tab.active {
+            background: var(--gradient-primary);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .service-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+        }
+
+        .service-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .service-name .sub {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .service-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .service-price {
+            font-weight: 700;
+            color: var(--text-accent);
+        }
+
+        .service-badges {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .services-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            gap: var(--space-md);
+            padding: var(--space-md) var(--space-lg);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+
+            .service-row,
+            .services-header {
+                grid-template-columns: 1fr;
+                gap: var(--space-xs);
+            }
+
+            .services-header {
+                display: none;
+            }
+
+            .service-row {
+                padding: var(--space-lg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <span class="logo-icon">🚀</span>
+                TikTokBoost
+            </a>
+            <div class="navbar-menu" id="navMenu">
+                <a href="index.html#platforms">แพลตฟอร์ม</a>
+                <a href="index.html#features">จุดเด่น</a>
+                <a href="index.html#pricing">ราคา</a>
+                <a href="services.html" style="color:var(--text-primary);">บริการ</a>
+                <a href="index.html#faq">FAQ</a>
+            </div>
+            <div class="navbar-actions">
+                <a href="login.html" class="btn btn-secondary btn-sm">เข้าสู่ระบบ</a>
+                <a href="register.html" class="btn btn-primary btn-sm">สมัครฟรี</a>
+                <button class="navbar-toggle" id="navToggle" aria-label="Menu">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <div style="padding-top:calc(var(--navbar-height) + var(--space-3xl));">
+        <div class="container">
+            <div class="text-center" style="margin-bottom:var(--space-3xl);">
+                <h1 class="section-title">บริการ<span class="text-gradient">ทั้งหมด</span></h1>
+                <p class="section-subtitle">เลือกแพลตฟอร์มและบริการที่ต้องการ — ราคาถูกที่สุด ส่งไว</p>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="all">ทั้งหมด</button>
+                <button class="filter-tab" data-filter="tiktok">🎵 TikTok</button>
+                <button class="filter-tab" data-filter="facebook">📘 Facebook</button>
+                <button class="filter-tab" data-filter="instagram">📸 Instagram</button>
+                <button class="filter-tab" data-filter="youtube">📺 YouTube</button>
+                <button class="filter-tab" data-filter="twitter">🐦 Twitter/X</button>
+                <button class="filter-tab" data-filter="line">💚 LINE OA</button>
+            </div>
+
+            <!-- Services List -->
+            <div class="glass-card" style="overflow:hidden;">
+                <div class="services-header">
+                    <span>บริการ</span>
+                    <span>ราคา/1K</span>
+                    <span>ขั้นต่ำ</span>
+                    <span>เวลาจัดส่ง</span>
+                    <span>สถานะ</span>
+                    <span></span>
+                </div>
+
+                <!-- TikTok -->
+                <div class="service-row" data-platform="tiktok">
+                    <div class="service-name">🎵 TikTok วิว<div class="sub">วิวคุณภาพสูง จากบัญชีจริง ไม่ลด</div>
+                    </div>
+                    <div class="service-price">฿0.50</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-5 นาที</div>
+                    <div class="service-badges"><span class="badge badge-success">🔥 ขายดี</span><span
+                            class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="tiktok">
+                    <div class="service-name">🎵 TikTok ไลค์<div class="sub">ไลค์จากบัญชีจริง มี Refill</div>
+                    </div>
+                    <div class="service-price">฿3.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-10 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="tiktok">
+                    <div class="service-name">🎵 TikTok ผู้ติดตาม<div class="sub">ผู้ติดตามคุณภาพสูง Refill 30 วัน</div>
+                    </div>
+                    <div class="service-price">฿15.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail" style="color:var(--green-500);">5-30 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="tiktok">
+                    <div class="service-name">🎵 TikTok แชร์<div class="sub">แชร์โพสต์จากบัญชีจริง</div>
+                    </div>
+                    <div class="service-price">฿5.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">0-15 นาที</div>
+                    <div class="service-badges"><span class="badge badge-new">ใหม่</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="tiktok">
+                    <div class="service-name">🎵 TikTok คอมเม้นท์<div class="sub">คอมเม้นท์จากบัญชีจริง (Random/Custom)
+                        </div>
+                    </div>
+                    <div class="service-price">฿50.00</div>
+                    <div class="service-detail">10</div>
+                    <div class="service-detail">10-60 นาที</div>
+                    <div class="service-badges"></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <!-- Facebook -->
+                <div class="service-row" data-platform="facebook">
+                    <div class="service-name">📘 Facebook ไลค์โพสต์<div class="sub">ไลค์จากบัญชีจริง Refill 30 วัน</div>
+                    </div>
+                    <div class="service-price">฿8.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-10 นาที</div>
+                    <div class="service-badges"><span class="badge badge-success">🔥 ขายดี</span><span
+                            class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="facebook">
+                    <div class="service-name">📘 Facebook ผู้ติดตาม / ไลค์เพจ<div class="sub">เพิ่มผู้ติดตาม/ไลค์เพจ
+                            จากบัญชีจริง</div>
+                    </div>
+                    <div class="service-price">฿20.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">5-30 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="facebook">
+                    <div class="service-name">📘 Facebook แชร์โพสต์<div class="sub">แชร์โพสต์จากบัญชีจริง</div>
+                    </div>
+                    <div class="service-price">฿15.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail">0-15 นาที</div>
+                    <div class="service-badges"></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="facebook">
+                    <div class="service-name">📘 Facebook คนดูไลฟ์สด<div class="sub">เพิ่มคนดูไลฟ์สดแบบ Real-time</div>
+                    </div>
+                    <div class="service-price">฿25.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-5 นาที</div>
+                    <div class="service-badges"><span class="badge badge-hot">🔥 HOT</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <!-- Instagram -->
+                <div class="service-row" data-platform="instagram">
+                    <div class="service-name">📸 Instagram ผู้ติดตาม<div class="sub">ผู้ติดตามคุณภาพ Refill 30 วัน</div>
+                    </div>
+                    <div class="service-price">฿12.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">5-30 นาที</div>
+                    <div class="service-badges"><span class="badge badge-success">🔥 ขายดี</span><span
+                            class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="instagram">
+                    <div class="service-name">📸 Instagram ไลค์<div class="sub">ไลค์จากบัญชีจริง</div>
+                    </div>
+                    <div class="service-price">฿5.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-10 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="instagram">
+                    <div class="service-name">📸 Instagram วิว Reels/Stories<div class="sub">เพิ่มยอดวิว Reels และ
+                            Stories</div>
+                    </div>
+                    <div class="service-price">฿2.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-5 นาที</div>
+                    <div class="service-badges"><span class="badge badge-new">ใหม่</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <!-- YouTube -->
+                <div class="service-row" data-platform="youtube">
+                    <div class="service-name">📺 YouTube วิว<div class="sub">วิวคุณภาพสูง Retention สูง</div>
+                    </div>
+                    <div class="service-price">฿10.00</div>
+                    <div class="service-detail">500</div>
+                    <div class="service-detail">5-60 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="youtube">
+                    <div class="service-name">📺 YouTube Subscribers<div class="sub">Subscribers คุณภาพ</div>
+                    </div>
+                    <div class="service-price">฿50.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">10-60 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <!-- Twitter -->
+                <div class="service-row" data-platform="twitter">
+                    <div class="service-name">🐦 Twitter/X ผู้ติดตาม<div class="sub">ผู้ติดตาม Refill 30 วัน</div>
+                    </div>
+                    <div class="service-price">฿18.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">5-30 นาที</div>
+                    <div class="service-badges"><span class="badge badge-info">Refill</span></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <div class="service-row" data-platform="twitter">
+                    <div class="service-name">🐦 Twitter/X ไลค์<div class="sub">ไลค์ทวีต/โพสต์</div>
+                    </div>
+                    <div class="service-price">฿8.00</div>
+                    <div class="service-detail">50</div>
+                    <div class="service-detail" style="color:var(--green-500);">0-15 นาที</div>
+                    <div class="service-badges"></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+
+                <!-- LINE -->
+                <div class="service-row" data-platform="line">
+                    <div class="service-name">💚 LINE OA เพิ่มเพื่อน<div class="sub">เพิ่มเพื่อน LINE Official Account
+                        </div>
+                    </div>
+                    <div class="service-price">฿30.00</div>
+                    <div class="service-detail">100</div>
+                    <div class="service-detail">30-120 นาที</div>
+                    <div class="service-badges"></div>
+                    <a href="order.html" class="btn btn-primary btn-sm">สั่งซื้อ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <section class="section cta-section" style="margin-top:var(--space-3xl);">
+        <div class="container">
+            <div class="cta-box">
+                <h2>พร้อมสั่งซื้อแล้วหรือยัง? 🚀</h2>
+                <p>สมัครฟรี เติมเงิน สั่งซื้อ รับผลทันที</p>
+                <a href="register.html" class="btn btn-lg">สมัครสมาชิกฟรี →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border:none;padding:var(--space-xl) 0;">
+                <span>© 2026 TikTokBoost. All rights reserved.</span>
+                <div class="footer-bottom-links">
+                    <a href="index.html">หน้าแรก</a>
+                    <a href="index.html#faq">FAQ</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

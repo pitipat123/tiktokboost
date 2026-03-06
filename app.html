@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Boost Manager - Unified Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0d1117;
+            --bg-panel: #161b22;
+            --bg-card: #1c2333;
+            --bg-input: #0d1117;
+            --bg-row-hover: #1a2030;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-dim: #8b949e;
+            --text-muted: #484f58;
+            --accent: #8b5cf6;
+            --green: #3fb950;
+            --orange: #d29922;
+            --red: #f85149;
+            --blue: #58a6ff;
+            --cyan: #39d353;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: 13px;
+            -webkit-app-region: no-drag;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            height: 32px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            -webkit-app-region: drag;
+        }
+
+        .top-bar * {
+            -webkit-app-region: no-drag;
+        }
+
+        .menu-bar {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .menu-bar span {
+            cursor: pointer;
+        }
+
+        .menu-bar span:hover {
+            color: var(--text);
+        }
+
+        /* ===== BALANCE BAR ===== */
+        .balance-bar {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            gap: 8px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .balance-badge {
+            padding: 4px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid;
+        }
+
+        .balance-badge.ipv {
+            background: rgba(88, 166, 255, 0.1);
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .balance-badge.kmm {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .balance-badge.a4u {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .balance-badge.nlk {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: #ec4899;
+            color: #ec4899;
+        }
+
+        .balance-badge.mlk {
+            background: rgba(251, 146, 60, 0.1);
+            border-color: #fb923c;
+            color: #fb923c;
+        }
+
+        .balance-bar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-topup {
+            background: var(--green);
+            color: #000;
+            border: none;
+            padding: 5px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-topup:hover {
+            background: #4cc963;
+        }
+
+        .btn-icon {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-card);
+            color: var(--text);
+        }
+
+        /* ===== TABS ===== */
+        .tab-bar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            padding: 0 12px;
+        }
+
+        .tab-btn {
+            padding: 8px 18px;
+            border: none;
+            background: none;
+            color: var(--text-dim);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .tab-btn.active-orange {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .tab-btn.active-red {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .tab-btn.active-cyan {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* ===== UNIFIED BOOST ===== */
+        .boost-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .boost-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid var(--border);
+        }
+
+        .boost-right {
+            width: 280px;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--orange);
+            padding: 8px 12px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-panel);
+            flex-wrap: wrap;
+        }
+
+        .filters label {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .filters select,
+        .filters input[type="text"] {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filters select {
+            min-width: 180px;
+        }
+
+        .filters input[type="text"] {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .search-input {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            width: 100%;
+            margin: 0 12px 6px;
+        }
+
+        /* Service Table */
+        .table-wrap {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .svc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            table-layout: fixed;
+        }
+
+        .svc-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .svc-table th {
+            background: var(--bg-panel);
+            color: var(--text-dim);
+            padding: 6px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .svc-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+            white-space: nowrap;
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .svc-table tr:hover {
+            background: var(--bg-row-hover);
+        }
+
+        .svc-table .provider-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+
+        .svc-table .provider-dot.ipv {
+            background: var(--blue);
+        }
+
+        .svc-table .provider-dot.kmm {
+            background: var(--accent);
+        }
+
+        .svc-table .provider-dot.a4u {
+            background: var(--green);
+        }
+
+        .svc-table .provider-dot.nlk {
+            background: #ec4899;
+        }
+
+        .svc-table .provider-dot.mlk {
+            background: #fb923c;
+        }
+
+        .svc-table td.time-col {
+            color: var(--green);
+        }
+
+        .svc-table input[type="checkbox"] {
+            accent-color: var(--accent);
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+        }
+
+        .hot-badge {
+            background: var(--red);
+            color: #fff;
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        .dashed-name {
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            display: flex;
+            padding: 6px 12px;
+            gap: 8px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-panel);
+        }
+
+        .bottom-actions button {
+            flex: 1;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-refresh {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .btn-delete {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-save-list {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .btn-load-list {
+            background: var(--green);
+            color: #000;
+        }
+
+        .bottom-actions button:hover {
+            opacity: 0.85;
+        }
+
+        /* ===== RIGHT PANEL (Order Config) ===== */
+        .order-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .order-panel .section-title {
+            color: var(--orange);
+        }
+
+        .order-field {
+            padding: 6px 12px;
+        }
+
+        .order-field label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .order-field input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .selected-services {
+            flex: 1;
+            margin: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: var(--text-dim);
+            min-height: 80px;
+        }
+
+        .selected-services .sel-item {
+            padding: 3px 6px;
+            border-radius: 3px;
+            margin-bottom: 3px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .selected-services .sel-item:hover {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: var(--red);
+        }
+
+        .preset-btns {
+            display: flex;
+            gap: 6px;
+            padding: 6px 12px;
+        }
+
+        .preset-btns button {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-save-preset {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .btn-load-preset {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .clear-all {
+            text-align: center;
+            padding: 4px;
+            font-size: 11px;
+            color: var(--red);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .clear-all:hover {
+            text-decoration: underline;
+        }
+
+        .btn-boost {
+            margin: 6px 12px;
+            padding: 10px;
+            background: var(--green);
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-boost:hover {
+            background: #4cc963;
+        }
+
+        .log-area {
+            margin: 6px 12px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 10px;
+            font-family: monospace;
+            color: var(--text-dim);
+            min-height: 60px;
+        }
+
+        .log-area .log-line {
+            margin-bottom: 2px;
+        }
+
+        .log-area .log-time {
+            color: var(--text-muted);
+        }
+
+        .log-area .log-ok {
+            color: var(--green);
+        }
+
+        .log-area .log-err {
+            color: var(--red);
+        }
+
+        .log-area .log-info {
+            color: var(--blue);
+        }
+
+        /* ===== ORDER HISTORY TAB ===== */
+        .history-layout {
+            flex: 1;
+            overflow: auto;
+            padding: 0;
+        }
+
+        .history-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-panel);
+        }
+
+        .history-filters select {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-action {
+            padding: 5px 14px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-action.blue {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .order-table th {
+            background: var(--bg-panel);
+            color: var(--text-dim);
+            padding: 6px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+        }
+
+        .order-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+            font-size: 12px;
+        }
+
+        .order-table tr:hover {
+            background: var(--bg-row-hover);
+        }
+
+        .stats-section {
+            padding: 12px;
+        }
+
+        .stats-title {
+            color: var(--red);
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .stats-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stats-box h4 {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stats-box p {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 3px;
+        }
+
+        .stats-box .highlight {
+            color: var(--orange);
+            font-weight: 700;
+        }
+
+        /* ===== SETTINGS TAB ===== */
+        .settings-layout {
+            flex: 1;
+            overflow: auto;
+            padding: 12px;
+        }
+
+        .settings-section {
+            margin-bottom: 16px;
+        }
+
+        .settings-label {
+            color: var(--red);
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .api-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .api-row label {
+            width: 80px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+        }
+
+        .api-row input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--green);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .api-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .api-btns button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-hide {
+            background: var(--orange);
+            color: #000;
+        }
+
+        .btn-save-keys {
+            background: var(--green);
+            color: #000;
+        }
+
+        .info-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        .info-box p {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 3px;
+        }
+
+        .check-balance-btn {
+            display: block;
+            margin: 12px auto;
+            padding: 8px 24px;
+            background: var(--blue);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ===== STATUS BAR ===== */
+        .status-bar {
+            height: 22px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-dim);
+            gap: 8px;
+        }
+
+        .status-bar .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* === DELIVERY STATS TAB === */
+        .ds-layout {
+            flex: 1;
+            overflow: auto;
+            padding: 12px;
+        }
+
+        .ds-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .ds-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .ds-card .ds-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .ds-card .ds-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .ds-card .ds-sub {
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .ds-bar-wrap {
+            margin-bottom: 6px;
+        }
+
+        .ds-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .ds-bar-row .ds-bar-label {
+            width: 110px;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .ds-bar-row .ds-bar {
+            flex: 1;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .ds-bar-row .ds-bar .ds-fill {
+            height: 100%;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            transition: width 0.6s ease;
+        }
+
+        .ds-compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .ds-compare-table th {
+            background: var(--bg-panel);
+            color: var(--text-dim);
+            padding: 6px 8px;
+            text-align: left;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ds-compare-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+        }
+
+        .ds-compare-table tr:hover {
+            background: var(--bg-row-hover);
+        }
+
+        .ds-fastest {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .ds-medium {
+            color: var(--orange);
+        }
+
+        .ds-slow {
+            color: var(--red);
+        }
+
+        .ds-track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ds-track-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .ds-track-item .ds-track-provider {
+            font-weight: 600;
+            width: 80px;
+        }
+
+        .ds-track-item .ds-track-svc {
+            flex: 1;
+            color: var(--text-dim);
+        }
+
+        .ds-track-item .ds-track-time {
+            font-weight: 700;
+            width: 70px;
+            text-align: right;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 350px;
+            max-width: 450px;
+        }
+
+        .modal-box h3 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-box select,
+        .modal-box input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .modal-btns button {
+            flex: 1;
+            padding: 7px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="menu-bar">
+            <span>📁 File</span>
+            <span>❓ Help</span>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted);">TikTok Boost Manager - Unified Platform</span>
+    </div>
+
+    <!-- BALANCE BAR -->
+    <div class="balance-bar">
+        <div class="balance-badge ipv" id="bal-ipv">iPlusView: <span id="bal-ipv-val">0.00</span> THB</div>
+        <div class="balance-badge kmm" id="bal-kmm">KMM: <span id="bal-kmm-val">0.00</span> THB</div>
+        <div class="balance-badge a4u" id="bal-a4u">Ads4U: <span id="bal-a4u-val">0.00</span> THB</div>
+        <div class="balance-badge nlk" id="bal-nlk">NewLike: <span id="bal-nlk-val">0.00</span> THB</div>
+        <div class="balance-badge mlk" id="bal-mlk">MeeLike: <span id="bal-mlk-val">0.00</span> THB</div>
+        <div class="balance-bar-right">
+            <button class="btn-topup" onclick="alert('Top Up — coming soon')">💰 Top Up</button>
+            <button class="btn-icon" title="Dark/Light">🌙</button>
+        </div>
+    </div>
+
+    <!-- TAB BAR -->
+    <div class="tab-bar">
+        <button class="tab-btn active" data-tab="boost">⚡ Unified Boost</button>
+        <button class="tab-btn" data-tab="history">📋 Order History</button>
+        <button class="tab-btn" data-tab="speed">📈 Delivery Stats</button>
+        <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+
+        <!-- ===== TAB: UNIFIED BOOST ===== -->
+        <div class="tab-content active" id="tab-boost">
+            <div class="boost-layout">
+                <!-- LEFT: Services -->
+                <div class="boost-left">
+                    <div class="section-title">Available Services</div>
+
+                    <!-- Filters -->
+                    <div class="filters">
+                        <label>Provider:</label>
+                        <select id="filterProvider" onchange="filterServices()">
+                            <option value="all">All Providers</option>
+                            <option value="iPlusView">iPlusView</option>
+                            <option value="KMM">KMM</option>
+                            <option value="Ads4U">Ads4U</option>
+                            <option value="NewLike">NewLike</option>
+                            <option value="MeeLike">MeeLike</option>
+                        </select>
+                        <label>Category:</label>
+                        <select id="filterCategory" onchange="filterServices()">
+                            <option value="all">All Categories</option>
+                            <option value="Likes">Likes</option>
+                            <option value="Views">Views</option>
+                            <option value="Followers">Followers</option>
+                            <option value="Comments">Comments</option>
+                            <option value="Shares">Shares</option>
+                            <option value="Saves">Saves</option>
+                            <option value="Live">Live</option>
+                            <option value="Story">Story</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search services..."
+                        oninput="filterServices()" style="margin:6px 12px;width:calc(100% - 24px);">
+
+                    <!-- Table -->
+                    <div class="table-wrap">
+                        <table class="svc-table" id="serviceTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:30px;"><input type="checkbox" id="selectAll"
+                                            onchange="toggleSelectAll(this)"></th>
+                                    <th style="width:70px;">ID</th>
+                                    <th style="width:80px;">Provider</th>
+                                    <th>Service Name</th>
+                                    <th style="width:80px;cursor:pointer;" onclick="sortBy('rate')" id="th-rate">
+                                        Price/1k ⇅</th>
+                                    <th style="width:50px;cursor:pointer;" onclick="sortBy('min')" id="th-min">Min ⇅
+                                    </th>
+                                    <th style="width:75px;cursor:pointer;" onclick="sortBy('max')" id="th-max">Max ⇅
+                                    </th>
+                                    <th style="width:60px;">Time</th>
+                                    <th style="width:50px;">Select</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceBody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Bottom Actions -->
+                    <div class="bottom-actions">
+                        <button class="btn-refresh" onclick="refreshServices()">🔄 Refresh Services</button>
+                        <button class="btn-delete" onclick="deleteSelected()">🗑️ Delete Selected</button>
+                        <button class="btn-save-list" onclick="saveServiceList()">💾 Save List</button>
+                        <button class="btn-load-list" onclick="loadServiceList()">📂 Load List</button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Order Config -->
+                <div class="boost-right">
+                    <div class="order-panel">
+                        <div class="section-title">Order Configuration</div>
+
+                        <div class="order-field">
+                            <label>Link:</label>
+                            <input type="text" id="orderLink" placeholder="https://tiktok.com/...">
+                        </div>
+
+                        <div class="order-field">
+                            <label>💰 Budget Limit (฿):</label>
+                            <input type="number" id="budgetLimit" placeholder="e.g. 500" min="0" value=""
+                                oninput="updateBudgetBar()">
+                        </div>
+                        <div id="budgetInfo" style="padding:0 12px 6px;font-size:11px;display:none;">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                                <span>Used: <strong id="budgetUsed" style="color:var(--orange);">0 ฿</strong></span>
+                                <span>Remaining: <strong id="budgetRemain" style="color:var(--green);">0
+                                        ฿</strong></span>
+                            </div>
+                            <div style="background:var(--bg-card);border-radius:4px;height:6px;overflow:hidden;">
+                                <div id="budgetBar"
+                                    style="height:100%;background:var(--green);border-radius:4px;width:0%;transition:width 0.3s;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="padding:6px 12px;">
+                            <label style="font-size:11px;color:var(--text-dim);">Selected Services (Double-click to
+                                remove):</label>
+                        </div>
+                        <div class="selected-services" id="selectedServices">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <div class="preset-btns">
+                            <button class="btn-save-preset" onclick="showSavePreset()">💾 Save Preset</button>
+                            <button class="btn-load-preset" onclick="showLoadPreset()">📂 Load Preset</button>
+                        </div>
+
+                        <div class="clear-all" onclick="clearSelected()">✖ Clear All</div>
+
+                        <button class="btn-boost" onclick="boostAllSelected()">⚡ BOOST ALL SELECTED</button>
+
+                        <div style="padding:0 12px 2px;">
+                            <label style="font-size:11px;color:var(--text-dim);">Log:</label>
+                        </div>
+                        <div class="log-area" id="logArea">
+                            <!-- Log messages -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: ORDER HISTORY ===== -->
+        <div class="tab-content" id="tab-history">
+            <div class="history-filters">
+                <label style="font-size:12px;color:var(--text-dim);">Filter:</label>
+                <select id="historyFilter">
+                    <option>All Providers</option>
+                    <option>iPlusView</option>
+                    <option>KMM</option>
+                    <option>Ads4U</option>
+                    <option>NewLike</option>
+                    <option>MeeLike</option>
+                </select>
+                <button class="btn-action blue" onclick="refreshHistory()">📋 Refresh</button>
+            </div>
+
+            <div class="history-layout">
+                <table class="order-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox"></th>
+                            <th>Provider</th>
+                            <th>Order ID</th>
+                            <th>Service</th>
+                            <th>Link</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                            <th>Charge</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+
+                <!-- Statistics -->
+                <div class="stats-section">
+                    <div class="stats-title">📊 Statistics</div>
+
+                    <div class="stats-box">
+                        <h4>Overall Statistics:</h4>
+                        <p><strong>By Provider:</strong></p>
+                        <p id="stats-provider">Loading...</p>
+                        <p style="margin-top:6px;"><strong>By Status:</strong></p>
+                        <p id="stats-status">Loading...</p>
+                    </div>
+
+                    <div class="stats-box">
+                        <div class="highlight">🔥 Popular Services (Last 3 Days)</div>
+                        <div style="margin-top:8px;">
+                            <h4>Most Used Services by Provider:</h4>
+                            <div id="stats-popular">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: SETTINGS ===== -->
+        <div class="tab-content" id="tab-settings">
+            <div class="settings-layout">
+                <!-- API Keys -->
+                <div class="settings-section">
+                    <div class="settings-label">🔑 API Keys</div>
+                    <div class="api-row">
+                        <label>iPlusView:</label>
+                        <input type="password" id="key-ipv" placeholder="Enter iPlusView API Key">
+                    </div>
+                    <div class="api-row">
+                        <label>KMM:</label>
+                        <input type="password" id="key-kmm" placeholder="Enter KMM API Key">
+                    </div>
+                    <div class="api-row">
+                        <label>Ads4U:</label>
+                        <input type="password" id="key-a4u" placeholder="Enter Ads4U API Key">
+                    </div>
+                    <div class="api-row">
+                        <label>NewLike:</label>
+                        <input type="password" id="key-nlk" placeholder="Enter NewLike API Key">
+                    </div>
+                    <div class="api-row">
+                        <label>MeeLike:</label>
+                        <input type="password" id="key-mlk" placeholder="Enter MeeLike API Key">
+                    </div>
+                    <div class="api-btns">
+                        <button class="btn-hide" onclick="toggleAllKeys()">🔐 Hide Keys</button>
+                        <button class="btn-save-keys" onclick="saveAllKeys()">💾 Save API Keys</button>
+                    </div>
+                </div>
+
+                <!-- Account Balances -->
+                <div class="settings-section">
+                    <div class="settings-label">💰 Account Balances</div>
+                    <div class="stats-box" id="balanceDisplay">
+                        <p style="color:var(--text-muted);">Click "Check All Balances" to fetch latest balances from
+                            providers.</p>
+                    </div>
+                    <button class="check-balance-btn" onclick="checkAllBalances()">📊 Check All Balances</button>
+                </div>
+
+                <!-- Info -->
+                <div class="settings-section">
+                    <div class="settings-label">ℹ️ Information</div>
+                    <div class="info-box">
+                        <p><strong>How to get API Keys:</strong></p>
+                        <p>• iPlusView: <span style="color:var(--blue);">https://iplusview.store/settings</span></p>
+                        <p>• KMM: <span style="color:var(--blue);">https://kmm-th.com/api</span></p>
+                        <p>• Ads4U: <span style="color:var(--blue);">https://ads4u.co/api</span></p>
+                        <p>• NewLike: <span style="color:var(--blue);">https://new-like.com/api</span></p>
+                        <p>• MeeLike: <span style="color:var(--blue);">https://app.meelike-th.com/api</span></p>
+                        <p style="margin-top:6px;"><strong>Note:</strong> Keys are stored locally in data/config.json
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Check for Updates -->
+                <div class="settings-section">
+                    <div class="settings-label">🔄 Application Update</div>
+                    <div class="info-box" id="updateInfo">
+                        <p>Current version: <strong style="color:var(--green);">v1.1.0</strong></p>
+                        <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
+                            Updates" to check the latest version.</p>
+                        <div id="updateProgressWrap" style="display:none;margin-top:8px;">
+                            <div style="background:var(--bg-dark);border-radius:4px;height:8px;overflow:hidden;">
+                                <div id="updateProgressBar"
+                                    style="height:100%;background:var(--green);border-radius:4px;width:0%;transition:width 0.3s;">
+                                </div>
+                            </div>
+                            <p id="updateProgressText" style="font-size:11px;color:var(--cyan);margin-top:4px;">0%</p>
+                        </div>
+                    </div>
+                    <button class="check-balance-btn" onclick="manualCheckUpdate()" id="btnCheckUpdate">🔄 Check for
+                        Updates</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: DELIVERY STATS ===== -->
+        <div class="tab-content" id="tab-speed">
+            <div class="ds-layout">
+                <div class="section-title" style="padding:0 0 8px;">📈 Delivery Speed Analytics</div>
+
+                <!-- Summary Cards -->
+                <div class="ds-grid">
+                    <div class="ds-card">
+                        <div class="ds-label">Total Orders Tracked</div>
+                        <div class="ds-val" style="color:var(--blue);" id="ds-total">0</div>
+                        <div class="ds-sub" style="color:var(--text-muted);">all providers</div>
+                    </div>
+                    <div class="ds-card">
+                        <div class="ds-label">Avg Delivery Time</div>
+                        <div class="ds-val" style="color:var(--green);" id="ds-avg">—</div>
+                        <div class="ds-sub" style="color:var(--text-muted);">across all services</div>
+                    </div>
+                    <div class="ds-card">
+                        <div class="ds-label">Fastest Delivery</div>
+                        <div class="ds-val" style="color:var(--cyan);" id="ds-fast">—</div>
+                        <div class="ds-sub" style="color:var(--text-muted);" id="ds-fast-svc">—</div>
+                    </div>
+                    <div class="ds-card">
+                        <div class="ds-label">Success Rate</div>
+                        <div class="ds-val" style="color:var(--orange);" id="ds-success">—</div>
+                        <div class="ds-sub" style="color:var(--text-muted);">completed orders</div>
+                    </div>
+                </div>
+
+                <!-- Speed Comparison Bars -->
+                <div class="stats-box">
+                    <h4 style="margin-bottom:12px;">⏱️ Average Speed by Provider</h4>
+                    <div class="ds-bar-wrap" id="ds-provider-bars">
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:var(--blue);">● iPlusView</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-ipv" style="width:0%;background:var(--blue);">—</div>
+                            </div>
+                        </div>
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:var(--accent);">● KMM</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-kmm" style="width:0%;background:var(--accent);">—</div>
+                            </div>
+                        </div>
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:var(--green);">● Ads4U</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-a4u" style="width:0%;background:var(--green);">—</div>
+                            </div>
+                        </div>
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:#ec4899;">● NewLike</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-nlk" style="width:0%;background:#ec4899;">—</div>
+                            </div>
+                        </div>
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:#fb923c;">● MeeLike</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-mlk" style="width:0%;background:#fb923c;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speed Comparison Table -->
+                <div class="stats-box">
+                    <h4 style="margin-bottom:8px;">📊 Provider Speed Comparison</h4>
+                    <table class="ds-compare-table">
+                        <thead>
+                            <tr>
+                                <th>Provider</th>
+                                <th>Orders</th>
+                                <th>Avg Time</th>
+                                <th>Fastest</th>
+                                <th>Slowest</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ds-compare-body">
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:var(--text-muted);padding:12px;">No
+                                    delivery data yet. Place orders to start tracking.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Recent Deliveries -->
+                <div class="stats-box">
+                    <h4 style="margin-bottom:8px;">🚀 Recent Delivery Tracking</h4>
+                    <div class="ds-track-list" id="ds-track-list">
+                        <div style="text-align:center;color:var(--text-muted);padding:12px;font-size:11px;">No
+                            deliveries tracked yet.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="status-bar">
+        <span class="dot"></span>
+        <span id="statusText">Ready</span>
+        <span style="margin-left:auto;" id="providerCount"></span>
+    </div>
+
+    <!-- Save Preset Modal -->
+    <div class="modal-overlay" id="savePresetModal">
+        <div class="modal-box">
+            <h3>💾 Save Preset</h3>
+            <label style="font-size:11px;color:var(--text-dim);">Preset name:</label>
+            <input type="text" id="presetNameInput" placeholder="e.g. TikTok 1000 views">
+            <div class="modal-btns">
+                <button style="background:var(--green);color:#000;" onclick="doSavePreset()">💾 Save</button>
+                <button style="background:var(--border);color:var(--text);"
+                    onclick="closeModal('savePresetModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Preset Modal -->
+    <div class="modal-overlay" id="loadPresetModal">
+        <div class="modal-box">
+            <h3>📂 Load Preset &nbsp; <span style="font-size:11px;color:var(--text-muted);cursor:pointer;"
+                    title="Help">?</span></h3>
+            <label style="font-size:11px;color:var(--text-dim);">Select preset to load:</label>
+            <select id="presetSelector"></select>
+            <div class="modal-btns">
+                <button style="background:var(--accent);color:#fff;" onclick="doLoadPreset()">📂 Load</button>
+                <button style="background:var(--red);color:#fff;" onclick="doDeletePreset()">🗑️ Delete</button>
+                <button style="background:var(--border);color:var(--text);"
+                    onclick="closeModal('loadPresetModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quantity Modal -->
+    <div class="modal-overlay" id="qtyModal">
+        <div class="modal-box" style="min-width:400px;">
+            <h3>📦 Select Quantity</h3>
+            <div style="margin-bottom:8px;">
+                <label style="font-size:11px;color:var(--text-dim);">Service:</label>
+                <div id="qtyModalService"
+                    style="font-size:13px;font-weight:600;color:var(--text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                </div>
+            </div>
+            <div id="qtyModalMinMax" style="font-size:11px;color:var(--text-muted);margin-bottom:10px;"></div>
+            <label style="font-size:11px;color:var(--text-dim);">Quick Select:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px;">
+                <button onclick="qtyQuickSelect(1000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">1,000</button>
+                <button onclick="qtyQuickSelect(2000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">2,000</button>
+                <button onclick="qtyQuickSelect(5000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">5,000</button>
+                <button onclick="qtyQuickSelect(10000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">10,000</button>
+                <button onclick="qtyQuickSelect(25000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">25,000</button>
+                <button onclick="qtyQuickSelect(50000)"
+                    style="padding:6px 14px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-weight:600;font-size:12px;">50,000</button>
+            </div>
+            <label style="font-size:11px;color:var(--text-dim);">Or enter custom quantity:</label>
+            <input type="number" id="qtyCustom" placeholder="Enter quantity" style="margin-top:4px;">
+            <div style="font-size:12px;margin-top:4px;color:var(--green);font-weight:700;">Selected: <span
+                    id="qtySelectedVal">1</span></div>
+            <div class="modal-btns">
+                <button style="background:var(--green);color:#000;" onclick="qtyConfirm()">✅ OK</button>
+                <button style="background:var(--border);color:var(--text);" onclick="qtyCancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIG =====
+        const API_URLS = {
+            iPlusView: 'https://iplusview.store/api',
+            KMM: 'https://kmm-th.com/api/v2',
+            Ads4U: 'https://ads4u.co/api/v2',
+            NewLike: 'https://new-like.com/api/v2',
+            MeeLike: 'https://api.meelike-th.com/api/v2'
+        };
+
+        // ===== STATE =====
+        let allServices = [];
+        let selectedServices = [];
+        let orderHistory = JSON.parse(localStorage.getItem('tb_order_history') || '[]');
+        let presets = JSON.parse(localStorage.getItem('tb_presets') || '{}');
+
+        // ===== TAB SWITCHING =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'active-orange', 'active-red'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                const tab = btn.dataset.tab;
+                if (tab === 'boost') btn.classList.add('active');
+                else if (tab === 'history') btn.classList.add('active-orange');
+                else if (tab === 'speed') btn.classList.add('active-orange');
+                else if (tab === 'settings') btn.classList.add('active-red');
+
+                document.getElementById('tab-' + tab).classList.add('active');
+            });
+        });
+
+        // ===== API HELPERS =====
+        function getKey(provider) {
+            const ids = { iPlusView: 'key-ipv', KMM: 'key-kmm', Ads4U: 'key-a4u', NewLike: 'key-nlk', MeeLike: 'key-mlk' };
+            return document.getElementById(ids[provider])?.value || localStorage.getItem(`tb_key_${provider}`) || '';
+        }
+
+        async function apiCall(provider, action, params = {}) {
+            const key = getKey(provider);
+            if (!key) throw new Error(`No API key for ${provider}`);
+
+            const url = API_URLS[provider];
+            // iPlusView uses non-v2 API: 'add' → 'order'
+            const actionMap = { iPlusView: { add: 'order' } };
+            const mappedAction = actionMap[provider]?.[action] || action;
+            const body = { key, action: mappedAction, ...params };
+
+            // Use Electron IPC to bypass CORS
+            if (window.electronAPI && window.electronAPI.apiCall) {
+                return await window.electronAPI.apiCall(url, body);
+            }
+
+            // Fallback for browser testing
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return await res.json();
+        }
+
+        function log(msg, type = 'info') {
+            const area = document.getElementById('logArea');
+            const time = new Date().toLocaleTimeString('th-TH');
+            const cls = type === 'ok' ? 'log-ok' : type === 'err' ? 'log-err' : 'log-info';
+            area.innerHTML += `<div class="log-line"><span class="log-time">[${time}]</span> <span class="${cls}">${msg}</span></div>`;
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function setStatus(text) {
+            document.getElementById('statusText').textContent = text;
+        }
+
+        // ===== FETCH SERVICES =====
+        async function fetchServicesFromProvider(provider) {
+            try {
+                const data = await apiCall(provider, 'services');
+                if (Array.isArray(data)) {
+                    // Filter only TikTok-related services
+                    const tiktokOnly = data.filter(s => {
+                        const name = (s.name || '').toLowerCase();
+                        const cat = (s.category || '').toLowerCase();
+                        return name.includes('tiktok') || name.includes('tik tok') || name.includes('tik-tok')
+                            || cat.includes('tiktok') || cat.includes('tik tok') || cat.includes('tik-tok')
+                            || name.includes('ติ๊กต๊อก') || cat.includes('ติ๊กต๊อก')
+                            || name.includes('tt ') || cat.includes('tt -');
+                    });
+                    log(`📦 ${provider}: Total ${data.length} services, ${tiktokOnly.length} TikTok`, 'info');
+                    return tiktokOnly.map(s => ({
+                        id: s.service,
+                        provider,
+                        name: s.name,
+                        category: s.category || 'Other',
+                        rate: parseFloat(s.rate) || 0,
+                        min: parseInt(s.min) || 1,
+                        max: parseInt(s.max) || 1,
+                        time: s.average_time || 'N/A',
+                        usage: 'N/A'
+                    }));
+                } else {
+                    log(`⚠️ ${provider}: Response is not an array: ${JSON.stringify(data).substring(0, 200)}`, 'err');
+                }
+                return [];
+            } catch (e) {
+                log(`❌ ${provider}: ${e.message}`, 'err');
+                return [];
+            }
+        }
+
+        async function refreshServices() {
+            log('Fetching TikTok services from all providers...', 'info');
+            setStatus('Fetching services...');
+            allServices = [];
+
+            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'];
+            for (const p of providers) {
+                if (!getKey(p)) {
+                    log(`⚠️ ${p}: No API key set, skipping`, 'err');
+                    continue;
+                }
+                const svcs = await fetchServicesFromProvider(p);
+                allServices = allServices.concat(svcs);
+                log(`✅ Loaded ${svcs.length} TikTok services from ${p}`, 'ok');
+            }
+
+            renderServices();
+            setStatus(`Ready | ${allServices.length} TikTok services`);
+            document.getElementById('providerCount').textContent = `Showing ${allServices.length} services`;
+        }
+
+
+
+        // ===== SORTING =====
+        let currentSort = { field: null, dir: 'asc' };
+
+        function sortBy(field) {
+            if (currentSort.field === field) {
+                currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.dir = 'asc';
+            }
+            // Update header indicators
+            ['rate', 'min', 'max'].forEach(f => {
+                const th = document.getElementById('th-' + f);
+                if (!th) return;
+                const label = f === 'rate' ? 'Price/1k' : f === 'min' ? 'Min' : 'Max';
+                th.textContent = f === currentSort.field ? `${label} ${currentSort.dir === 'asc' ? '▲' : '▼'}` : `${label} ⇅`;
+            });
+            renderServices();
+        }
+
+        // ===== RENDER SERVICES =====
+        function renderServices() {
+            const body = document.getElementById('serviceBody');
+            const prov = document.getElementById('filterProvider').value;
+            const cat = document.getElementById('filterCategory').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            const catKeywords = {
+                'Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
+                'Views': ['view', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
+                'Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม'],
+                'Comments': ['comment', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
+                'Shares': ['share', 'แชร์'],
+                'Saves': ['save', 'บันทึก'],
+                'Live': ['live', 'ไลฟ์', 'สด', 'stream'],
+                'Story': ['story', 'สตอรี่']
+            };
+
+            let filtered = allServices.filter(s => {
+                if (prov !== 'all' && s.provider !== prov) return false;
+                if (cat !== 'all') {
+                    const keywords = catKeywords[cat];
+                    if (keywords) {
+                        const nameLow = (s.name || '').toLowerCase();
+                        const catLow = (s.category || '').toLowerCase();
+                        const match = keywords.some(kw => nameLow.includes(kw) || catLow.includes(kw));
+                        if (!match) return false;
+                    } else {
+                        return false;
+                    }
+                }
+                if (search && !s.name.toLowerCase().includes(search) && !String(s.id).includes(search)) return false;
+                return true;
+            });
+
+            // Apply sorting
+            if (currentSort.field) {
+                filtered.sort((a, b) => {
+                    const va = a[currentSort.field] || 0;
+                    const vb = b[currentSort.field] || 0;
+                    return currentSort.dir === 'asc' ? va - vb : vb - va;
+                });
+            }
+
+            body.innerHTML = filtered.map((s, i) => {
+                const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : 'mlk';
+                const isSelected = selectedServices.some(sel => sel.id === s.id && sel.provider === s.provider);
+                return `<tr>
+          <td><input type="checkbox" class="svc-check" data-idx="${i}" ${isSelected ? 'checked' : ''}></td>
+          <td>${s.id}</td>
+          <td><span class="provider-dot ${dotCls}"></span>${s.provider}</td>
+          <td title="${(s.name || '').replace(/"/g, '&quot;')}">${s.name || '<span class="dashed-name">———</span>'}</td>
+          <td>${s.rate.toFixed(4)}</td>
+          <td>${s.min}</td>
+          <td>${s.max.toLocaleString()}</td>
+          <td class="time-col">${s.time}</td>
+          <td><input type="checkbox" class="svc-select" data-provider="${s.provider}" data-id="${s.id}" data-name="${(s.name || '').replace(/"/g, '&quot;')}" data-rate="${s.rate}" data-min="${s.min}" data-max="${s.max}" ${isSelected ? 'checked' : ''} onchange="toggleService(this)"></td>
+        </tr>`;
+            }).join('');
+
+            document.getElementById('providerCount').textContent = `Showing ${filtered.length} services`;
+        }
+
+        function filterServices() { renderServices(); }
+
+        // ===== SERVICE SELECTION =====
+        function toggleService(checkbox) {
+            const { provider, id, name, rate, min, max } = checkbox.dataset;
+            if (checkbox.checked) {
+                // Show quantity modal
+                showQuantityModal(provider, id, name, parseFloat(rate), parseInt(min) || 1, parseInt(max) || 100000, checkbox);
+            } else {
+                selectedServices = selectedServices.filter(s => !(s.id === id && s.provider === provider));
+                renderSelected();
+            }
+        }
+
+        let qtyModalCb = null;
+        function showQuantityModal(provider, id, name, rate, min, max, checkbox) {
+            qtyModalCb = checkbox;
+            document.getElementById('qtyModalService').textContent = name || `Service #${id}`;
+            document.getElementById('qtyModalMinMax').textContent = `Min: ${min.toLocaleString()} | Max: ${max.toLocaleString()}`;
+            document.getElementById('qtyCustom').value = '';
+            document.getElementById('qtyCustom').placeholder = `Enter quantity (e.g., ${min})`;
+            document.getElementById('qtySelectedVal').textContent = min;
+            document.getElementById('qtyModal').dataset.provider = provider;
+            document.getElementById('qtyModal').dataset.id = id;
+            document.getElementById('qtyModal').dataset.name = name;
+            document.getElementById('qtyModal').dataset.rate = rate;
+            document.getElementById('qtyModal').dataset.min = min;
+            document.getElementById('qtyModal').dataset.max = max;
+            document.getElementById('qtyModal').classList.add('show');
+        }
+
+        function qtyQuickSelect(val) {
+            document.getElementById('qtySelectedVal').textContent = val.toLocaleString();
+            document.getElementById('qtyCustom').value = val;
+        }
+
+        function qtyConfirm() {
+            const modal = document.getElementById('qtyModal');
+            const { provider, id, name, rate } = modal.dataset;
+            const qty = parseInt(document.getElementById('qtyCustom').value) || parseInt(document.getElementById('qtySelectedVal').textContent.replace(/,/g, ''));
+            if (!selectedServices.some(s => s.id === id && s.provider === provider)) {
+                selectedServices.push({ provider, id, name, rate: parseFloat(rate), qty });
+            }
+            renderSelected();
+            modal.classList.remove('show');
+        }
+
+        function qtyCancel() {
+            if (qtyModalCb) qtyModalCb.checked = false;
+            document.getElementById('qtyModal').classList.remove('show');
+        }
+
+        function toggleSelectAll(checkbox) {
+            document.querySelectorAll('.svc-check').forEach(cb => cb.checked = checkbox.checked);
+            if (!checkbox.checked) {
+                selectedServices = [];
+                renderSelected();
+            }
+        }
+
+        function renderSelected() {
+            const container = document.getElementById('selectedServices');
+            if (selectedServices.length === 0) {
+                container.innerHTML = '<span style="color:var(--text-muted);">No services selected</span>';
+                return;
+            }
+            let totalCost = 0;
+            let totalQty = 0;
+            container.innerHTML = selectedServices.map((s, i) => {
+                const qty = s.qty || 1000;
+                const cost = (qty / 1000) * (s.rate || 0);
+                totalCost += cost;
+                totalQty += qty;
+                return `<div class="sel-item" ondblclick="removeSelected(${i})">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${s.provider} #${s.id}</span>
+          <span style="color:var(--cyan);font-size:11px;margin:0 6px;">x${qty.toLocaleString()}</span>
+          <span style="color:var(--green);font-size:11px;min-width:60px;text-align:right;">${cost.toFixed(2)} ฿</span>
+          <span style="color:var(--text-muted);margin-left:4px;cursor:pointer;">✕</span>
+        </div>`;
+            }).join('');
+            container.innerHTML += `<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;font-size:12px;">
+                <div style="display:flex;justify-content:space-between;font-weight:700;">
+                    <span>📦 ${selectedServices.length} services</span>
+                    <span style="color:var(--green);">${totalCost.toFixed(2)} ฿</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:2px;color:var(--cyan);">
+                    <span>📊 Total Quantity</span>
+                    <span style="font-weight:700;">${totalQty.toLocaleString()}</span>
+                </div>
+                ${getCategoryBreakdown()}
+            </div>`;
+            updateBudgetBar(totalCost);
+        }
+
+        function getCategoryBreakdown() {
+            const cats = {
+                '👁️ Views': ['view', 'วิว', 'ยอดวิว'],
+                '❤️ Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
+                '👥 Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม'],
+                '💬 Comments': ['comment', 'คอมเม้น', 'คอมเมนต์'],
+                '🔁 Shares': ['share', 'แชร์'],
+                '💾 Saves': ['save', 'บันทึก'],
+                '🔴 Live': ['live', 'ไลฟ์', 'สด', 'stream']
+            };
+            const totals = {};
+            selectedServices.forEach(s => {
+                const name = (s.name || '').toLowerCase();
+                let matched = false;
+                for (const [label, keywords] of Object.entries(cats)) {
+                    if (keywords.some(kw => name.includes(kw))) {
+                        totals[label] = (totals[label] || 0) + (s.qty || 1000);
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) totals['📦 Other'] = (totals['📦 Other'] || 0) + (s.qty || 1000);
+            });
+            if (Object.keys(totals).length <= 1) return '';
+            return `<div style="border-top:1px dashed var(--border);margin-top:4px;padding-top:4px;">` +
+                Object.entries(totals).map(([label, qty]) =>
+                    `<div style="display:flex;justify-content:space-between;margin-top:1px;color:var(--text-dim);font-size:11px;">
+                        <span>${label}</span>
+                        <span style="color:var(--text);font-weight:600;">${qty.toLocaleString()}</span>
+                    </div>`
+                ).join('') + '</div>';
+        }
+
+        function updateBudgetBar(usedAmount) {
+            const budgetInput = document.getElementById('budgetLimit');
+            const budget = parseFloat(budgetInput.value) || 0;
+            const info = document.getElementById('budgetInfo');
+            if (!budget || budget <= 0) { info.style.display = 'none'; return; }
+
+            // Calculate used from selected services if not passed
+            if (usedAmount === undefined) {
+                usedAmount = selectedServices.reduce((sum, s) => sum + ((s.qty || 1000) / 1000) * (s.rate || 0), 0);
+            }
+
+            const remain = Math.max(0, budget - usedAmount);
+            const pct = Math.min(100, (usedAmount / budget) * 100);
+
+            info.style.display = 'block';
+            document.getElementById('budgetUsed').textContent = usedAmount.toFixed(2) + ' ฿';
+            document.getElementById('budgetRemain').textContent = remain.toFixed(2) + ' ฿';
+            document.getElementById('budgetRemain').style.color = remain > 0 ? 'var(--green)' : 'var(--red)';
+
+            const bar = document.getElementById('budgetBar');
+            bar.style.width = pct + '%';
+            bar.style.background = pct >= 100 ? 'var(--red)' : pct >= 80 ? 'var(--orange)' : 'var(--green)';
+        }
+
+        function removeSelected(index) {
+            selectedServices.splice(index, 1);
+            renderSelected();
+            renderServices();
+        }
+
+        function clearSelected() {
+            selectedServices = [];
+            renderSelected();
+            renderServices();
+        }
+
+        function deleteSelected() {
+            const checks = document.querySelectorAll('.svc-check:checked');
+            if (checks.length === 0) { alert('No services selected'); return; }
+            const idxSet = new Set();
+            checks.forEach(cb => idxSet.add(parseInt(cb.dataset.idx)));
+            // Get currently filtered list to map idx back to service
+            const prov = document.getElementById('filterProvider').value;
+            const cat = document.getElementById('filterCategory').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let displayed = allServices.filter(s => {
+                if (prov !== 'all' && s.provider !== prov) return false;
+                if (search && !s.name.toLowerCase().includes(search) && !String(s.id).includes(search)) return false;
+                return true;
+            });
+            const toRemove = new Set();
+            idxSet.forEach(i => {
+                if (displayed[i]) toRemove.add(displayed[i].id + '|' + displayed[i].provider);
+            });
+            allServices = allServices.filter(s => !toRemove.has(s.id + '|' + s.provider));
+            log(`🗑️ Removed ${toRemove.size} services from list`, 'ok');
+            renderServices();
+        }
+
+        // ===== BOOST (Send Orders) =====
+        async function boostAllSelected() {
+            const link = document.getElementById('orderLink').value;
+            if (!link) { alert('Please enter a link'); return; }
+            if (selectedServices.length === 0) { alert('No services selected'); return; }
+
+            log(`🚀 Starting boost for ${selectedServices.length} services...`, 'info');
+
+            for (const svc of selectedServices) {
+                try {
+                    const qty = svc.qty || 1000;
+                    log(`📤 Sending order: ${svc.provider} #${svc.id} (qty: ${qty})...`, 'info');
+                    const result = await apiCall(svc.provider, 'add', {
+                        service: svc.id,
+                        link: link,
+                        quantity: qty
+                    });
+
+                    if (result.order) {
+                        log(`✅ ${svc.provider} #${svc.id} → Order #${result.order}`, 'ok');
+                        orderHistory.push({
+                            provider: svc.provider,
+                            orderId: result.order,
+                            service: svc.name || svc.id,
+                            link,
+                            quantity: qty,
+                            status: 'Pending',
+                            charge: ((qty / 1000) * svc.rate).toFixed(2),
+                            created: new Date().toISOString()
+                        });
+                        localStorage.setItem('tb_order_history', JSON.stringify(orderHistory));
+
+                        // Start delivery tracking
+                        const record = trackDelivery(svc.provider, svc.id, svc.name || svc.id, Date.now());
+                        record.orderId = result.order;
+                        deliveryRecords.push(record);
+                        localStorage.setItem('tb_delivery_records', JSON.stringify(deliveryRecords));
+                    } else if (result.error) {
+                        log(`❌ ${svc.provider} #${svc.id}: ${result.error}`, 'err');
+                    }
+                } catch (e) {
+                    log(`❌ ${svc.provider} #${svc.id}: ${e.message}`, 'err');
+                }
+            }
+
+            log('✅ Boost complete! Auto-checking status in 30s...', 'ok');
+            refreshHistory();
+            checkAllBalances();
+            // Start checking after 30 seconds
+            setTimeout(() => checkOrderStatuses(), 30000);
+            // Start auto-polling every 2 minutes
+            startStatusPolling();
+        }
+
+        // ===== BALANCE CHECK =====
+        async function checkAllBalances() {
+            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'];
+            const balDisplay = document.getElementById('balanceDisplay');
+            let html = '';
+
+            for (const p of providers) {
+                if (!getKey(p)) continue;
+                try {
+                    const data = await apiCall(p, 'balance');
+                    const bal = (data.balance !== undefined && data.balance !== null) ? data.balance : '0';
+                    const balNum = parseFloat(bal) || 0;
+                    html += `<p>• ${p}: <strong style="color:var(--green);">${balNum.toLocaleString()} THB</strong></p>`;
+
+                    // Update top bar
+                    const ids = { iPlusView: 'bal-ipv-val', KMM: 'bal-kmm-val', Ads4U: 'bal-a4u-val', NewLike: 'bal-nlk-val', MeeLike: 'bal-mlk-val' };
+                    document.getElementById(ids[p]).textContent = balNum.toLocaleString();
+                } catch (e) {
+                    html += `<p>• ${p}: <span style="color:var(--red);">Error: ${e.message}</span></p>`;
+                }
+            }
+
+            balDisplay.innerHTML = html || '<p style="color:var(--text-muted);">No API keys configured</p>';
+        }
+
+        // ===== PRESETS =====
+        function showSavePreset() {
+            if (selectedServices.length === 0) { alert('No services selected'); return; }
+            document.getElementById('savePresetModal').classList.add('show');
+        }
+
+        function showLoadPreset() {
+            const selector = document.getElementById('presetSelector');
+            const keys = Object.keys(presets);
+            selector.innerHTML = keys.length > 0
+                ? keys.map(k => `<option value="${k}">${k}</option>`).join('')
+                : '<option>No presets saved</option>';
+            document.getElementById('loadPresetModal').classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function doSavePreset() {
+            const name = document.getElementById('presetNameInput').value.trim();
+            if (!name) { alert('Enter a name'); return; }
+            presets[name] = [...selectedServices];
+            localStorage.setItem('tb_presets', JSON.stringify(presets));
+            log(`💾 Preset "${name}" saved with ${selectedServices.length} services`, 'ok');
+            closeModal('savePresetModal');
+            document.getElementById('presetNameInput').value = '';
+        }
+
+        function doLoadPreset() {
+            const name = document.getElementById('presetSelector').value;
+            if (presets[name]) {
+                selectedServices = [...presets[name]];
+                renderSelected();
+                renderServices();
+                log(`📂 Preset "${name}" loaded with ${selectedServices.length} services`, 'ok');
+            }
+            closeModal('loadPresetModal');
+        }
+
+        function doDeletePreset() {
+            const name = document.getElementById('presetSelector').value;
+            if (name && presets[name]) {
+                delete presets[name];
+                localStorage.setItem('tb_presets', JSON.stringify(presets));
+                log(`🗑️ Preset "${name}" deleted`, 'ok');
+                showLoadPreset();
+            }
+        }
+
+        // ===== SAVE / LOAD LIST =====
+        function saveServiceList() {
+            const data = JSON.stringify(allServices, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'services_list.json';
+            a.click();
+            log('💾 Service list saved', 'ok');
+        }
+
+        function loadServiceList() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    try {
+                        allServices = JSON.parse(ev.target.result);
+                        renderServices();
+                        log(`📂 Loaded ${allServices.length} services from file`, 'ok');
+                    } catch { log('❌ Invalid JSON file', 'err'); }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // ===== HISTORY =====
+        function refreshHistory() {
+            const body = document.getElementById('historyBody');
+            if (orderHistory.length === 0) {
+                body.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:20px;">No orders yet. Use Unified Boost to place orders.</td></tr>';
+                return;
+            }
+            body.innerHTML = orderHistory.map(o => `<tr>
+        <td><input type="checkbox"></td>
+        <td>${o.provider}</td>
+        <td>${o.orderId}</td>
+        <td>${o.service}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${o.link}</td>
+        <td>${o.quantity?.toLocaleString()}</td>
+        <td style="color:var(--orange);">${o.status}</td>
+        <td>${o.charge}</td>
+        <td>${new Date(o.created).toLocaleString('th-TH')}</td>
+      </tr>`).join('');
+
+            updateStats();
+        }
+
+        function updateStats() {
+            // Provider stats
+            const byProvider = {};
+            orderHistory.forEach(o => {
+                if (!byProvider[o.provider]) byProvider[o.provider] = { count: 0, spent: 0 };
+                byProvider[o.provider].count++;
+                byProvider[o.provider].spent += parseFloat(o.charge) || 0;
+            });
+            document.getElementById('stats-provider').innerHTML = Object.entries(byProvider)
+                .map(([p, d]) => `• ${p}: ${d.count} orders, $${d.spent.toFixed(2)} spent`).join('<br>');
+
+            const pending = orderHistory.filter(o => o.status === 'Pending').length;
+            document.getElementById('stats-status').textContent = `• Pending: ${pending}`;
+        }
+
+        // ===== SETTINGS KEYS =====
+        function saveAllKeys() {
+            localStorage.setItem('tb_key_iPlusView', document.getElementById('key-ipv').value);
+            localStorage.setItem('tb_key_KMM', document.getElementById('key-kmm').value);
+            localStorage.setItem('tb_key_Ads4U', document.getElementById('key-a4u').value);
+            localStorage.setItem('tb_key_NewLike', document.getElementById('key-nlk').value);
+            localStorage.setItem('tb_key_MeeLike', document.getElementById('key-mlk').value);
+            log('💾 API Keys saved', 'ok');
+            // Auto-fetch balances after saving
+            checkAllBalances();
+            // Auto-fetch services
+            refreshServices();
+        }
+
+        let keysVisible = true;
+        function toggleAllKeys() {
+            keysVisible = !keysVisible;
+            ['key-ipv', 'key-kmm', 'key-a4u', 'key-nlk', 'key-mlk'].forEach(id => {
+                document.getElementById(id).type = keysVisible ? 'text' : 'password';
+            });
+        }
+
+        // ===== DELIVERY SPEED TRACKING =====
+        let deliveryRecords = JSON.parse(localStorage.getItem('tb_delivery_records') || '[]');
+        let statusPollInterval = null;
+
+        function startStatusPolling() {
+            if (statusPollInterval) return; // Already running
+            statusPollInterval = setInterval(() => checkOrderStatuses(), 120000); // Every 2 min
+            log('⏱️ Auto-check started (every 2 min)', 'info');
+        }
+
+        async function checkOrderStatuses() {
+            const pendingOrders = orderHistory.filter(o => o.status === 'Pending');
+            if (pendingOrders.length === 0) {
+                if (statusPollInterval) { clearInterval(statusPollInterval); statusPollInterval = null; }
+                log('✅ No pending orders, auto-check stopped', 'ok');
+                return;
+            }
+
+            log(`🔍 Checking ${pendingOrders.length} pending orders...`, 'info');
+
+            for (const order of pendingOrders) {
+                try {
+                    const result = await apiCall(order.provider, 'status', { order: order.orderId });
+                    if (result.status) {
+                        const newStatus = result.status.charAt(0).toUpperCase() + result.status.slice(1).toLowerCase();
+                        if (newStatus !== order.status) {
+                            order.status = newStatus;
+                            log(`📊 ${order.provider} #${order.orderId}: ${newStatus}`, newStatus === 'Completed' ? 'ok' : 'info');
+
+                            // Complete delivery tracking
+                            if (['Completed', 'Partial'].includes(newStatus)) {
+                                const tracking = deliveryRecords.find(r => r.orderId === order.orderId && r.status === 'pending');
+                                if (tracking) {
+                                    completeDelivery(tracking);
+                                    log(`⚡ ${order.provider} #${order.orderId}: Delivered in ${formatDuration(tracking.duration)}`, 'ok');
+                                }
+                            } else if (['Canceled', 'Refunded'].includes(newStatus)) {
+                                const tracking = deliveryRecords.find(r => r.orderId === order.orderId && r.status === 'pending');
+                                if (tracking) { tracking.status = 'failed'; }
+                            }
+                        }
+                    }
+                } catch (e) { /* silently skip */ }
+            }
+
+            localStorage.setItem('tb_order_history', JSON.stringify(orderHistory));
+            localStorage.setItem('tb_delivery_records', JSON.stringify(deliveryRecords));
+            refreshHistory();
+            updateDeliveryStats();
+        }
+
+        function trackDelivery(provider, serviceId, serviceName, startTime) {
+            return {
+                provider,
+                serviceId,
+                serviceName,
+                startTime,
+                endTime: null,
+                duration: null,
+                status: 'pending'
+            };
+        }
+
+        function completeDelivery(record) {
+            record.endTime = Date.now();
+            record.duration = record.endTime - record.startTime;
+            record.status = 'completed';
+            deliveryRecords.push(record);
+            localStorage.setItem('tb_delivery_records', JSON.stringify(deliveryRecords));
+            updateDeliveryStats();
+        }
+
+        function formatDuration(ms) {
+            if (!ms || ms <= 0) return '—';
+            const mins = Math.floor(ms / 60000);
+            if (mins < 60) return `${mins}m`;
+            const hrs = Math.floor(mins / 60);
+            const remMins = mins % 60;
+            return `${hrs}h ${remMins}m`;
+        }
+
+        function updateDeliveryStats() {
+            const records = deliveryRecords.filter(r => r.status === 'completed' && r.duration > 0);
+
+            // Summary cards
+            document.getElementById('ds-total').textContent = records.length;
+
+            if (records.length === 0) return;
+
+            const avgMs = records.reduce((sum, r) => sum + r.duration, 0) / records.length;
+            document.getElementById('ds-avg').textContent = formatDuration(avgMs);
+
+            const fastest = records.reduce((min, r) => r.duration < min.duration ? r : min, records[0]);
+            document.getElementById('ds-fast').textContent = formatDuration(fastest.duration);
+            document.getElementById('ds-fast-svc').textContent = `${fastest.provider} #${fastest.serviceId}`;
+
+            const successRate = Math.round((records.length / (records.length + deliveryRecords.filter(r => r.status === 'failed').length)) * 100);
+            document.getElementById('ds-success').textContent = `${successRate}%`;
+
+            // Per-provider stats
+            const byProvider = {};
+            ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'].forEach(p => {
+                const pRecs = records.filter(r => r.provider === p);
+                if (pRecs.length > 0) {
+                    const avg = pRecs.reduce((s, r) => s + r.duration, 0) / pRecs.length;
+                    const fast = Math.min(...pRecs.map(r => r.duration));
+                    const slow = Math.max(...pRecs.map(r => r.duration));
+                    byProvider[p] = { count: pRecs.length, avg, fast, slow };
+                }
+            });
+
+            // Speed bars
+            const maxAvg = Math.max(...Object.values(byProvider).map(v => v.avg), 1);
+            const barIds = { iPlusView: 'ds-bar-ipv', KMM: 'ds-bar-kmm', Ads4U: 'ds-bar-a4u', NewLike: 'ds-bar-nlk', MeeLike: 'ds-bar-mlk' };
+            Object.entries(barIds).forEach(([prov, barId]) => {
+                const el = document.getElementById(barId);
+                if (byProvider[prov]) {
+                    const pct = Math.max(10, Math.round((byProvider[prov].avg / maxAvg) * 100));
+                    el.style.width = pct + '%';
+                    el.textContent = formatDuration(byProvider[prov].avg);
+                } else {
+                    el.style.width = '5%';
+                    el.textContent = 'N/A';
+                }
+            });
+
+            // Comparison table
+            const tbody = document.getElementById('ds-compare-body');
+            if (Object.keys(byProvider).length > 0) {
+                const fastest = Object.entries(byProvider).reduce((a, b) => a[1].avg < b[1].avg ? a : b);
+                tbody.innerHTML = Object.entries(byProvider).map(([p, d]) => {
+                    const speedClass = p === fastest[0] ? 'ds-fastest' : d.avg > maxAvg * 0.8 ? 'ds-slow' : 'ds-medium';
+                    const stars = p === fastest[0] ? '⚡ Fastest' : d.avg > maxAvg * 0.8 ? '🐢 Slow' : '👍 Good';
+                    return `<tr>
+                        <td><span class="provider-dot ${p === 'iPlusView' ? 'ipv' : p === 'KMM' ? 'kmm' : p === 'Ads4U' ? 'a4u' : p === 'NewLike' ? 'nlk' : 'mlk'}"></span> ${p}</td>
+                        <td>${d.count}</td>
+                        <td class="${speedClass}">${formatDuration(d.avg)}</td>
+                        <td style="color:var(--green);">${formatDuration(d.fast)}</td>
+                        <td style="color:var(--red);">${formatDuration(d.slow)}</td>
+                        <td>${stars}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Recent tracking
+            const recent = [...deliveryRecords].reverse().slice(0, 20);
+            const trackList = document.getElementById('ds-track-list');
+            if (recent.length > 0) {
+                trackList.innerHTML = recent.map(r => {
+                    const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : 'mlk';
+                    const timeStr = r.status === 'completed' ? formatDuration(r.duration) : '⏳ pending';
+                    const timeCls = r.status === 'completed' ? 'ds-fastest' : 'ds-medium';
+                    return `<div class="ds-track-item">
+                        <span class="ds-track-provider"><span class="provider-dot ${dotCls}"></span>${r.provider}</span>
+                        <span class="ds-track-svc">#${r.serviceId} - ${r.serviceName || 'Service'}</span>
+                        <span class="ds-track-time ${timeCls}">${timeStr}</span>
+                    </div>`;
+                }).join('');
+            }
+        }
+
+        // ===== INIT =====
+        function init() {
+            // Load saved keys
+            const savedIpv = localStorage.getItem('tb_key_iPlusView');
+            const savedKmm = localStorage.getItem('tb_key_KMM');
+            const savedA4u = localStorage.getItem('tb_key_Ads4U');
+            const savedNlk = localStorage.getItem('tb_key_NewLike');
+            const savedMlk = localStorage.getItem('tb_key_MeeLike');
+            if (savedIpv) document.getElementById('key-ipv').value = savedIpv;
+            if (savedKmm) document.getElementById('key-kmm').value = savedKmm;
+            if (savedA4u) document.getElementById('key-a4u').value = savedA4u;
+            if (savedNlk) document.getElementById('key-nlk').value = savedNlk;
+            if (savedMlk) document.getElementById('key-mlk').value = savedMlk;
+
+            renderSelected();
+            refreshHistory();
+            updateDeliveryStats();
+
+            let loadedProviders = [];
+            if (savedIpv) loadedProviders.push('iPlusView');
+            if (savedKmm) loadedProviders.push('KMM');
+            if (savedA4u) loadedProviders.push('Ads4U');
+            if (savedNlk) loadedProviders.push('NewLike');
+            if (savedMlk) loadedProviders.push('MeeLike');
+
+            setStatus(`Ready | ${loadedProviders.length} Providers loaded: ${loadedProviders.join(', ') || 'None'}`);
+            document.getElementById('providerCount').textContent = `Showing 0 services`;
+
+            log('🚀 TikTok Boost Manager started', 'info');
+            if (loadedProviders.length > 0) {
+                log(`🔑 ${loadedProviders.length} API keys loaded`, 'ok');
+                // Auto-fetch balances and services on startup
+                checkAllBalances();
+                refreshServices();
+                // Resume status polling if pending orders exist
+                const pendingCount = orderHistory.filter(o => o.status === 'Pending').length;
+                if (pendingCount > 0) {
+                    log(`⏱️ ${pendingCount} pending orders found, resuming auto-check...`, 'info');
+                    setTimeout(() => checkOrderStatuses(), 5000);
+                    startStatusPolling();
+                }
+            } else {
+                log('⚠️ No API keys configured. Go to Settings to add your keys.', 'err');
+            }
+        }
+
+        init();
+
+        // ===== AUTO-UPDATE UI =====
+        function manualCheckUpdate() {
+            const statusEl = document.getElementById('updateStatusText');
+            const btn = document.getElementById('btnCheckUpdate');
+            if (window.electronAPI && window.electronAPI.checkForUpdates) {
+                statusEl.textContent = '🔍 Checking for updates...';
+                statusEl.style.color = 'var(--cyan)';
+                btn.disabled = true;
+                btn.textContent = '⏳ Checking...';
+                window.electronAPI.checkForUpdates().then(result => {
+                    if (!result || result === 'no-update') {
+                        statusEl.textContent = '✅ You are on the latest version!';
+                        statusEl.style.color = 'var(--green)';
+                        btn.disabled = false;
+                        btn.textContent = '🔄 Check for Updates';
+                    }
+                }).catch(err => {
+                    statusEl.textContent = '❌ Error checking updates: ' + (err.message || err);
+                    statusEl.style.color = 'var(--red)';
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Check for Updates';
+                });
+            } else {
+                statusEl.textContent = '⚠️ Auto-update only works in installed version (not dev mode)';
+                statusEl.style.color = 'var(--orange)';
+            }
+        }
+
+        if (window.electronAPI) {
+            if (window.electronAPI.onUpdateStatus) {
+                window.electronAPI.onUpdateStatus((status) => {
+                    const statusEl = document.getElementById('updateStatusText');
+                    const btn = document.getElementById('btnCheckUpdate');
+                    const progressWrap = document.getElementById('updateProgressWrap');
+                    if (status === 'update-available') {
+                        statusEl.textContent = '📦 New version found! Downloading...';
+                        statusEl.style.color = 'var(--cyan)';
+                        progressWrap.style.display = 'block';
+                    } else if (status === 'update-downloaded') {
+                        statusEl.textContent = '✅ Update downloaded! Restart to install.';
+                        statusEl.style.color = 'var(--green)';
+                        btn.disabled = false;
+                        btn.textContent = '🔄 Restart to Update';
+                        btn.onclick = () => { if (confirm('Restart now to install update?')) location.reload(); };
+                    } else if (status === 'update-not-available') {
+                        statusEl.textContent = '✅ You are on the latest version!';
+                        statusEl.style.color = 'var(--green)';
+                        btn.disabled = false;
+                        btn.textContent = '🔄 Check for Updates';
+                    }
+                });
+            }
+            if (window.electronAPI.onUpdateProgress) {
+                window.electronAPI.onUpdateProgress((percent) => {
+                    const bar = document.getElementById('updateProgressBar');
+                    const text = document.getElementById('updateProgressText');
+                    const pct = Math.round(percent);
+                    bar.style.width = pct + '%';
+                    text.textContent = pct + '%';
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

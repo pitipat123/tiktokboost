@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — TikTokBoost</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:var(--space-md);">
+                <button class="navbar-toggle" id="sidebarToggle" style="display:inline-flex;"
+                    aria-label="Menu">☰</button>
+                <a href="index.html" class="navbar-brand">
+                    <span class="logo-icon">🚀</span>
+                    TikTokBoost
+                </a>
+            </div>
+            <div class="navbar-actions">
+                <span style="color:var(--text-secondary);font-size:0.85rem;">💰 ฿1,250.50</span>
+                <a href="topup.html" class="btn btn-primary btn-sm">เติมเงิน</a>
+                <a href="index.html" class="btn btn-secondary btn-sm"
+                    onclick="localStorage.removeItem('tiktokboost_user')">ออกจากระบบ</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-section-title">หลัก</div>
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="sidebar-item active">
+                    <span class="icon">📊</span> Dashboard
+                </a>
+                <a href="order.html" class="sidebar-item">
+                    <span class="icon">🛒</span> สั่งซื้อบริการ
+                </a>
+                <a href="order.html#presets" class="sidebar-item">
+                    <span class="icon">📋</span> พรีเซ็ต
+                </a>
+                <a href="orders.html" class="sidebar-item">
+                    <span class="icon">📦</span> ประวัติออเดอร์
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">การเงิน</div>
+            <nav class="sidebar-menu">
+                <a href="topup.html" class="sidebar-item">
+                    <span class="icon">💳</span> เติมเงิน
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">เครื่องมือ</div>
+            <nav class="sidebar-menu">
+                <a href="#stats-section" class="sidebar-item">
+                    <span class="icon">📈</span> สถิติจัดส่ง
+                </a>
+                <a href="api.html" class="sidebar-item">
+                    <span class="icon">🔗</span> API
+                </a>
+                <a href="#api-settings" class="sidebar-item">
+                    <span class="icon">🔑</span> ตั้งค่า API Key
+                </a>
+            </nav>
+
+            <div class="sidebar-section-title">อื่นๆ</div>
+            <nav class="sidebar-menu">
+                <a href="services.html" class="sidebar-item">
+                    <span class="icon">🏷️</span> ดูบริการทั้งหมด
+                </a>
+                <a href="#" class="sidebar-item">
+                    <span class="icon">⚙️</span> ตั้งค่าบัญชี
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1>👋 สวัสดี, Demo User</h1>
+                <p>ภาพรวมบัญชีของคุณ — อัปเดตแบบ Real-time</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="glass-card stat-card">
+                    <div class="stat-card-icon" style="background:rgba(139,92,246,0.15);">💰</div>
+                    <div class="stat-card-content">
+                        <h3>ยอดเงินคงเหลือ</h3>
+                        <div class="value text-gradient">฿1,250.50</div>
+                        <div class="change positive">↑ เติมล่าสุด ฿500</div>
+                    </div>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <div class="stat-card-icon" style="background:rgba(59,130,246,0.15);">📦</div>
+                    <div class="stat-card-content">
+                        <h3>ออเดอร์ทั้งหมด</h3>
+                        <div class="value">127</div>
+                        <div class="change positive">↑ 12 ออเดอร์วันนี้</div>
+                    </div>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <div class="stat-card-icon" style="background:rgba(16,185,129,0.15);">✅</div>
+                    <div class="stat-card-content">
+                        <h3>สำเร็จ</h3>
+                        <div class="value">118</div>
+                        <div class="change positive">92.9% อัตราสำเร็จ</div>
+                    </div>
+                </div>
+
+                <div class="glass-card stat-card">
+                    <div class="stat-card-icon" style="background:rgba(245,158,11,0.15);">⚡</div>
+                    <div class="stat-card-content">
+                        <h3>เวลาจัดส่งเฉลี่ย</h3>
+                        <div class="value">3.2 นาที</div>
+                        <div class="change positive">↓ เร็วกว่าเมื่อวาน 15%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Speed Chart Section -->
+            <div class="glass-card" id="stats-section" style="padding:var(--space-xl);margin-bottom:var(--space-xl);">
+                <h3 style="margin-bottom:var(--space-lg);font-size:1.1rem;">📈 สถิติความเร็วจัดส่ง (7 วันล่าสุด)</h3>
+                <div
+                    style="display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-md);margin-bottom:var(--space-xl);">
+                    <div
+                        style="text-align:center;padding:var(--space-md);background:rgba(139,92,246,0.08);border-radius:var(--radius-md);">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-xs);">🎵 TikTok
+                        </div>
+                        <div style="font-size:1.5rem;font-weight:800;color:var(--purple-500);">2.1 นาที</div>
+                        <div style="font-size:0.75rem;color:var(--green-500);">↓ 0.4 จากสัปดาห์ก่อน</div>
+                    </div>
+                    <div
+                        style="text-align:center;padding:var(--space-md);background:rgba(59,130,246,0.08);border-radius:var(--radius-md);">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-xs);">📘 Facebook
+                        </div>
+                        <div style="font-size:1.5rem;font-weight:800;color:var(--blue-500);">3.5 นาที</div>
+                        <div style="font-size:0.75rem;color:var(--green-500);">↓ 0.3 จากสัปดาห์ก่อน</div>
+                    </div>
+                    <div
+                        style="text-align:center;padding:var(--space-md);background:rgba(236,72,153,0.08);border-radius:var(--radius-md);">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-xs);">📸
+                            Instagram</div>
+                        <div style="font-size:1.5rem;font-weight:800;color:var(--pink-500);">4.0 นาที</div>
+                        <div style="font-size:0.75rem;color:var(--yellow-500);">→ เท่าเดิม</div>
+                    </div>
+                    <div
+                        style="text-align:center;padding:var(--space-md);background:rgba(239,68,68,0.08);border-radius:var(--radius-md);">
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:var(--space-xs);">📺 YouTube
+                        </div>
+                        <div style="font-size:1.5rem;font-weight:800;color:var(--red-500);">7.8 นาที</div>
+                        <div style="font-size:0.75rem;color:var(--green-500);">↓ 0.7 จากสัปดาห์ก่อน</div>
+                    </div>
+                </div>
+
+                <!-- Visual Bar Chart -->
+                <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+                    <div style="display:flex;align-items:center;gap:var(--space-md);">
+                        <span style="width:100px;font-size:0.85rem;color:var(--text-secondary);">🎵 TikTok วิว</span>
+                        <div
+                            style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:var(--radius-full);overflow:hidden;">
+                            <div
+                                style="width:95%;height:100%;background:var(--gradient-primary);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.7rem;font-weight:600;">
+                                2.1 นาที</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:var(--space-md);">
+                        <span style="width:100px;font-size:0.85rem;color:var(--text-secondary);">📘 FB ไลค์</span>
+                        <div
+                            style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:var(--radius-full);overflow:hidden;">
+                            <div
+                                style="width:85%;height:100%;background:linear-gradient(135deg,#3b82f6,#60a5fa);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.7rem;font-weight:600;">
+                                3.5 นาที</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:var(--space-md);">
+                        <span style="width:100px;font-size:0.85rem;color:var(--text-secondary);">📸 IG ไลค์</span>
+                        <div
+                            style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:var(--radius-full);overflow:hidden;">
+                            <div
+                                style="width:80%;height:100%;background:var(--gradient-secondary);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.7rem;font-weight:600;">
+                                4.0 นาที</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:var(--space-md);">
+                        <span style="width:100px;font-size:0.85rem;color:var(--text-secondary);">📺 YT วิว</span>
+                        <div
+                            style="flex:1;height:24px;background:rgba(255,255,255,0.05);border-radius:var(--radius-full);overflow:hidden;">
+                            <div
+                                style="width:65%;height:100%;background:linear-gradient(135deg,#ef4444,#f87171);border-radius:var(--radius-full);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.7rem;font-weight:600;">
+                                7.8 นาที</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Key Settings -->
+            <div class="glass-card" id="api-settings" style="padding:var(--space-xl);margin-bottom:var(--space-xl);">
+                <h3 style="margin-bottom:var(--space-sm);font-size:1.1rem;">🔑 ตั้งค่า API Key — เชื่อมต่อ SMM Provider
+                </h3>
+                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:var(--space-lg);">
+                    เชื่อมต่อ API Key จาก SMM Panel Provider เพื่อให้ระบบส่งคำสั่งซื้ออัตโนมัติ
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label">API URL (Provider Endpoint)</label>
+                    <input type="url" id="apiUrl" class="form-input" placeholder="https://provider-api.com/api/v2"
+                        value="">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">API Key</label>
+                    <div style="display:flex;gap:var(--space-sm);">
+                        <input type="password" id="apiKey" class="form-input" placeholder="ใส่ API Key จาก Provider"
+                            value="" style="flex:1;">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleApiKeyVisibility()"
+                            title="แสดง/ซ่อน">👁️</button>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:var(--space-md);align-items:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="saveApiSettings()">💾 บันทึก</button>
+                    <button class="btn btn-secondary btn-sm" onclick="testApiConnection()">🔗 ทดสอบการเชื่อมต่อ</button>
+                    <span id="apiStatus" style="font-size:0.85rem;color:var(--text-muted);"></span>
+                </div>
+
+                <div
+                    style="margin-top:var(--space-lg);padding:var(--space-md);background:rgba(139,92,246,0.08);border-radius:var(--radius-md);border:1px solid rgba(139,92,246,0.15);">
+                    <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:var(--space-sm);">
+                        💡 <strong>วิธีใช้:</strong> สมัครบัญชีกับ SMM Panel Provider แล้วนำ API URL และ API Key
+                        มาใส่ที่นี่
+                    </p>
+                    <p style="font-size:0.8rem;color:var(--text-muted);">
+                        เมื่อเชื่อมต่อแล้ว ทุกคำสั่งซื้อจะถูกส่งไปยัง Provider อัตโนมัติ พร้อมรับสถานะกลับมาแสดงผลแบบ
+                        Real-time
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Order -->
+            <div class="glass-card" style="padding:var(--space-xl);margin-bottom:var(--space-xl);">
+                <h3 style="margin-bottom:var(--space-lg);font-size:1.1rem;">🛒 สั่งซื้อด่วน</h3>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:var(--space-md);align-items:end;">
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label">บริการ</label>
+                        <select class="form-select" id="quickService" onchange="updatePriceCalc()">
+                            <option value="tiktok-views" data-rate="0.5">🎵 TikTok วิว</option>
+                            <option value="tiktok-followers" data-rate="15">🎵 TikTok ผู้ติดตาม</option>
+                            <option value="fb-likes" data-rate="8">📘 FB ไลค์โพสต์</option>
+                            <option value="ig-followers" data-rate="12">📸 IG ผู้ติดตาม</option>
+                            <option value="yt-views" data-rate="10">📺 YT วิว</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label">ลิงก์</label>
+                        <input type="url" class="form-input" placeholder="ใส่ลิงก์โพสต์/โปรไฟล์">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <label class="form-label">จำนวน</label>
+                        <input type="number" class="form-input" value="1000" min="100" max="1000000">
+                    </div>
+                    <button class="btn btn-primary">สั่งซื้อ</button>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="glass-card" style="padding:var(--space-xl);">
+                <div
+                    style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-lg);">
+                    <h3 style="font-size:1.1rem;">📦 ออเดอร์ล่าสุด</h3>
+                    <a href="orders.html" class="btn btn-secondary btn-sm">ดูทั้งหมด →</a>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>บริการ</th>
+                                <th>ลิงก์</th>
+                                <th>จำนวน</th>
+                                <th>ราคา</th>
+                                <th>เวลาจัดส่ง</th>
+                                <th>สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#28491</td>
+                                <td>🎵 TikTok วิว</td>
+                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">
+                                    tiktok.com/@user/v...</td>
+                                <td>10,000</td>
+                                <td>฿5.00</td>
+                                <td style="color:var(--green-500);">1.8 นาที ⚡</td>
+                                <td><span class="badge badge-success">สำเร็จ</span></td>
+                            </tr>
+                            <tr>
+                                <td>#28490</td>
+                                <td>📘 FB ไลค์โพสต์</td>
+                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">
+                                    facebook.com/post/...</td>
+                                <td>5,000</td>
+                                <td>฿40.00</td>
+                                <td style="color:var(--green-500);">3.2 นาที</td>
+                                <td><span class="badge badge-success">สำเร็จ</span></td>
+                            </tr>
+                            <tr>
+                                <td>#28489</td>
+                                <td>📸 IG ผู้ติดตาม</td>
+                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">
+                                    instagram.com/user...</td>
+                                <td>2,000</td>
+                                <td>฿24.00</td>
+                                <td style="color:var(--yellow-500);">กำลังส่ง...</td>
+                                <td><span class="badge badge-info">กำลังดำเนินการ</span></td>
+                            </tr>
+                            <tr>
+                                <td>#28488</td>
+                                <td>🎵 TikTok ผู้ติดตาม</td>
+                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">tiktok.com/@shop...
+                                </td>
+                                <td>1,000</td>
+                                <td>฿15.00</td>
+                                <td style="color:var(--green-500);">5.1 นาที</td>
+                                <td><span class="badge badge-success">สำเร็จ</span></td>
+                            </tr>
+                            <tr>
+                                <td>#28487</td>
+                                <td>📺 YT วิว</td>
+                                <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;">youtube.com/watch...
+                                </td>
+                                <td>5,000</td>
+                                <td>฿50.00</td>
+                                <td style="color:var(--text-muted);">รอดำเนินการ</td>
+                                <td><span class="badge badge-warning">รอคิว</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        // API Key Settings
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function saveApiSettings() {
+            const url = document.getElementById('apiUrl').value;
+            const key = document.getElementById('apiKey').value;
+            if (!url || !key) {
+                document.getElementById('apiStatus').textContent = '❌ กรุณากรอก API URL และ API Key';
+                document.getElementById('apiStatus').style.color = 'var(--red-500)';
+                return;
+            }
+            localStorage.setItem('tiktokboost_api_url', url);
+            localStorage.setItem('tiktokboost_api_key', key);
+            document.getElementById('apiStatus').textContent = '✅ บันทึกสำเร็จ!';
+            document.getElementById('apiStatus').style.color = 'var(--green-500)';
+        }
+
+        function testApiConnection() {
+            const url = localStorage.getItem('tiktokboost_api_url') || document.getElementById('apiUrl').value;
+            const key = localStorage.getItem('tiktokboost_api_key') || document.getElementById('apiKey').value;
+            const status = document.getElementById('apiStatus');
+
+            if (!url || !key) {
+                status.textContent = '❌ กรุณาบันทึก API ก่อนทดสอบ';
+                status.style.color = 'var(--red-500)';
+                return;
+            }
+
+            status.textContent = '🔄 กำลังทดสอบ...';
+            status.style.color = 'var(--yellow-500)';
+
+            // Test connection to provider API
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: key, action: 'balance' })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.balance !== undefined) {
+                        status.textContent = `✅ เชื่อมต่อสำเร็จ! ยอดเงิน Provider: $${data.balance}`;
+                        status.style.color = 'var(--green-500)';
+                    } else if (data.error) {
+                        status.textContent = `❌ Error: ${data.error}`;
+                        status.style.color = 'var(--red-500)';
+                    } else {
+                        status.textContent = '✅ เชื่อมต่อสำเร็จ! (Response received)';
+                        status.style.color = 'var(--green-500)';
+                    }
+                })
+                .catch(err => {
+                    status.textContent = '❌ ไม่สามารถเชื่อมต่อได้: ' + err.message;
+                    status.style.color = 'var(--red-500)';
+                });
+        }
+
+        // Load saved API settings
+        const savedUrl = localStorage.getItem('tiktokboost_api_url');
+        const savedKey = localStorage.getItem('tiktokboost_api_key');
+        if (savedUrl) document.getElementById('apiUrl').value = savedUrl;
+        if (savedKey) document.getElementById('apiKey').value = savedKey;
+    </script>
+</body>
+
+</html>
