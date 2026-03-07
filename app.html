@@ -1324,7 +1324,19 @@
                         <p style="color:var(--text-muted);">Click "Check All Balances" to fetch latest balances from
                             providers.</p>
                     </div>
-                    <button class="check-balance-btn" onclick="checkAllBalances()">📊 Check All Balances</button>
+                    <div style="display:flex;gap:8px;">
+                        <button class="check-balance-btn" onclick="checkAllBalances()">📊 Check All Balances</button>
+                        <button class="check-balance-btn" style="background:var(--green);color:#000;"
+                            onclick="showTopUpModal()">💳 Top Up</button>
+                    </div>
+
+                    <!-- Top Up History -->
+                    <div class="stats-box" style="margin-top:10px;">
+                        <h4 style="margin-bottom:8px;">💳 Top Up History</h4>
+                        <div id="topupHistoryList" style="max-height:200px;overflow-y:auto;">
+                            <p style="color:var(--text-muted);font-size:11px;">No top-up history yet.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Info -->
@@ -1346,7 +1358,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.3.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.4.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1558,6 +1570,57 @@
             <div class="modal-btns">
                 <button style="background:var(--green);color:#000;" onclick="qtyConfirm()">✅ OK</button>
                 <button style="background:var(--border);color:var(--text);" onclick="qtyCancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Up Modal -->
+    <div class="modal-overlay" id="topUpModal">
+        <div class="modal-box" style="max-width:700px;width:95%;max-height:90vh;overflow:auto;">
+            <h3>💳 Top Up — เติมเงิน</h3>
+            <div style="display:flex;gap:10px;margin:10px 0;">
+                <div style="flex:1;">
+                    <label style="font-size:11px;color:var(--text-dim);">เลือกเว็บ:</label>
+                    <select id="topupProvider" onchange="updateTopUpUrl()"
+                        style="width:100%;padding:8px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+                        <option value="iPlusView">iPlusView</option>
+                        <option value="KMM">KMM</option>
+                        <option value="Ads4U">Ads4U</option>
+                        <option value="NewLike">NewLike</option>
+                        <option value="MeeLike">MeeLike</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:11px;color:var(--text-dim);">จำนวนเงิน (฿):</label>
+                    <input type="number" id="topupAmount" placeholder="e.g. 100"
+                        style="width:100%;padding:8px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);">
+                </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+                <button onclick="document.getElementById('topupAmount').value=50"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿50</button>
+                <button onclick="document.getElementById('topupAmount').value=100"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿100</button>
+                <button onclick="document.getElementById('topupAmount').value=200"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿200</button>
+                <button onclick="document.getElementById('topupAmount').value=500"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿500</button>
+                <button onclick="document.getElementById('topupAmount').value=1000"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿1,000</button>
+                <button onclick="document.getElementById('topupAmount').value=2000"
+                    style="padding:4px 12px;background:var(--bg-panel);border:1px solid var(--border);color:var(--text);border-radius:4px;cursor:pointer;font-size:11px;">฿2,000</button>
+            </div>
+
+            <div style="border:1px solid var(--border);border-radius:6px;overflow:hidden;height:400px;background:#fff;">
+                <webview id="topupWebview" src="about:blank" style="width:100%;height:100%;" allowpopups></webview>
+            </div>
+
+            <div class="modal-btns" style="margin-top:10px;">
+                <button style="background:var(--green);color:#000;" onclick="openTopUpPage()">🌐 Open Payment
+                    Page</button>
+                <button style="background:var(--accent);color:#fff;" onclick="recordTopUp()">📝 Record Top Up</button>
+                <button style="background:var(--border);color:var(--text);"
+                    onclick="closeModal('topUpModal')">Close</button>
             </div>
         </div>
     </div>
@@ -2162,6 +2225,86 @@
 
             btn.disabled = false;
             btn.textContent = '☁️ Download Sync';
+        }
+
+        // ===== TOP UP =====
+        const TOPUP_URLS = {
+            iPlusView: 'https://iplusview.store/addfunds',
+            KMM: 'https://kmm-th.com/addfunds',
+            Ads4U: 'https://ads4u.co/addfunds',
+            NewLike: 'https://new-like.com/addfunds',
+            MeeLike: 'https://app.meelike-th.com/addfunds'
+        };
+        let topupHistory = JSON.parse(localStorage.getItem('tb_topup_history') || '[]');
+
+        function showTopUpModal() {
+            document.getElementById('topUpModal').classList.add('show');
+            renderTopUpHistory();
+        }
+
+        function updateTopUpUrl() {
+            // Just updates the state, page loads on "Open Payment Page"
+        }
+
+        function openTopUpPage() {
+            const provider = document.getElementById('topupProvider').value;
+            const webview = document.getElementById('topupWebview');
+            const url = TOPUP_URLS[provider] || '#';
+            webview.src = url;
+            log(`🌐 Opening ${provider} payment page...`, 'info');
+        }
+
+        function recordTopUp() {
+            const provider = document.getElementById('topupProvider').value;
+            const amount = parseFloat(document.getElementById('topupAmount').value);
+            if (!amount || amount <= 0) {
+                log('⚠️ Please enter amount before recording', 'err');
+                return;
+            }
+            const record = {
+                provider,
+                amount,
+                date: new Date().toISOString(),
+                id: Date.now()
+            };
+            topupHistory.unshift(record);
+            localStorage.setItem('tb_topup_history', JSON.stringify(topupHistory));
+            log(`💳 Recorded top up: ฿${amount.toLocaleString()} to ${provider}`, 'ok');
+            renderTopUpHistory();
+            document.getElementById('topupAmount').value = '';
+        }
+
+        function renderTopUpHistory() {
+            const el = document.getElementById('topupHistoryList');
+            if (topupHistory.length === 0) {
+                el.innerHTML = '<p style="color:var(--text-muted);font-size:11px;">No top-up history yet.</p>';
+                return;
+            }
+            // Group totals by provider
+            const totals = {};
+            topupHistory.forEach(r => {
+                totals[r.provider] = (totals[r.provider] || 0) + r.amount;
+            });
+            const totalAll = topupHistory.reduce((s, r) => s + r.amount, 0);
+
+            let html = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">`;
+            html += `<span style="font-size:11px;padding:3px 8px;background:var(--bg-dark);border-radius:4px;color:var(--green);font-weight:700;">Total: ฿${totalAll.toLocaleString()}</span>`;
+            Object.entries(totals).forEach(([p, t]) => {
+                html += `<span style="font-size:10px;padding:3px 8px;background:var(--bg-dark);border-radius:4px;color:var(--text-muted);">${p}: ฿${t.toLocaleString()}</span>`;
+            });
+            html += `</div>`;
+
+            html += topupHistory.slice(0, 20).map(r => {
+                const date = new Date(r.date).toLocaleString('th-TH');
+                const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : 'mlk';
+                return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;">
+                    <span><span class="provider-dot ${dotCls}"></span> ${r.provider}</span>
+                    <span style="color:var(--green);font-weight:600;">฿${r.amount.toLocaleString()}</span>
+                    <span style="color:var(--text-muted);">${date}</span>
+                </div>`;
+            }).join('');
+
+            el.innerHTML = html;
         }
 
         // ===== SAVE / LOAD LIST =====
