@@ -1358,7 +1358,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.5.1</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.5.2</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2148,34 +2148,12 @@
             document.getElementById(id).classList.remove('show');
         }
 
-        // Deduplicate services in a list
-        function deduplicateServices(services) {
-            const seen = new Set();
-            const unique = [];
-            const dupes = [];
-            services.forEach(s => {
-                const key = `${s.provider}_${s.service}`;
-                if (seen.has(key)) {
-                    dupes.push(s);
-                } else {
-                    seen.add(key);
-                    unique.push(s);
-                }
-            });
-            return { unique, dupes };
-        }
-
         function doSavePreset() {
             const name = document.getElementById('presetNameInput').value.trim();
             if (!name) { alert('Enter a name'); return; }
-            const { unique, dupes } = deduplicateServices(selectedServices);
-            if (dupes.length > 0) {
-                log(`⚠️ พบ ${dupes.length} โค้ดซ้ำ ลบออกอัตโนมัติ`, 'info');
-                dupes.forEach(s => log(`   🔄 #${s.service} (${s.provider})`, 'info'));
-            }
-            presets[name] = unique;
+            presets[name] = [...selectedServices];
             localStorage.setItem('tb_presets', JSON.stringify(presets));
-            log(`💾 Preset "${name}" saved with ${unique.length} services`, 'ok');
+            log(`💾 Preset "${name}" saved with ${selectedServices.length} services`, 'ok');
             closeModal('savePresetModal');
             document.getElementById('presetNameInput').value = '';
         }
@@ -2184,15 +2162,6 @@
             const name = document.getElementById('presetSelector').value;
             if (presets[name]) {
                 let presetServices = [...presets[name]];
-
-                // Dedup first
-                const { unique: deduped, dupes } = deduplicateServices(presetServices);
-                if (dupes.length > 0) {
-                    log(`🔄 พบ ${dupes.length} โค้ดซ้ำ ลบออกแล้ว`, 'info');
-                    presetServices = deduped;
-                    presets[name] = deduped;
-                    localStorage.setItem('tb_presets', JSON.stringify(presets));
-                }
 
                 // Check dead services ONLY for providers that were refreshed
                 if (allServices.length > 0) {
