@@ -1358,7 +1358,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.4.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.5.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1524,15 +1524,31 @@
     <!-- Load Preset Modal -->
     <div class="modal-overlay" id="loadPresetModal">
         <div class="modal-box">
-            <h3>📂 Load Preset &nbsp; <span style="font-size:11px;color:var(--text-muted);cursor:pointer;"
-                    title="Help">?</span></h3>
-            <label style="font-size:11px;color:var(--text-dim);">Select preset to load:</label>
+            <h3>📂 Preset Manager</h3>
+            <label style="font-size:11px;color:var(--text-dim);">Select preset:</label>
             <select id="presetSelector"></select>
+            <div id="presetServiceCount" style="font-size:10px;color:var(--text-muted);margin:4px 0;"></div>
             <div class="modal-btns">
                 <button style="background:var(--accent);color:#fff;" onclick="doLoadPreset()">📂 Load</button>
+                <button style="background:var(--green);color:#000;" onclick="doAddToPreset()">➕ Add Current</button>
+                <button style="background:var(--orange);color:#000;" onclick="doRenamePreset()">✏️ Rename</button>
                 <button style="background:var(--red);color:#fff;" onclick="doDeletePreset()">🗑️ Delete</button>
                 <button style="background:var(--border);color:var(--text);"
                     onclick="closeModal('loadPresetModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dead Services Popup -->
+    <div class="modal-overlay" id="deadServicesModal">
+        <div class="modal-box" style="max-width:500px;">
+            <h3>⚠️ Service ถูกยกเลิกจากเว็บ</h3>
+            <p style="font-size:12px;color:var(--text-dim);margin-bottom:8px;">Service ต่อไปนี้ไม่มีในเว็บแล้ว
+                ถูกลบออกจาก preset อัตโนมัติ:</p>
+            <div id="deadServicesList" style="max-height:250px;overflow-y:auto;"></div>
+            <div class="modal-btns" style="margin-top:10px;">
+                <button style="background:var(--accent);color:#fff;" onclick="closeModal('deadServicesModal')">OK
+                    รับทราบ</button>
             </div>
         </div>
     </div>
@@ -2116,8 +2132,15 @@
             const selector = document.getElementById('presetSelector');
             const keys = Object.keys(presets);
             selector.innerHTML = keys.length > 0
-                ? keys.map(k => `<option value="${k}">${k}</option>`).join('')
+                ? keys.map(k => `<option value="${k}">${k} (${presets[k].length} services)</option>`).join('')
                 : '<option>No presets saved</option>';
+            // Show count
+            selector.onchange = () => {
+                const n = selector.value;
+                const cnt = presets[n] ? presets[n].length : 0;
+                document.getElementById('presetServiceCount').textContent = `📦 ${cnt} services in this preset`;
+            };
+            if (keys.length > 0) selector.onchange();
             document.getElementById('loadPresetModal').classList.add('show');
         }
 
@@ -2125,12 +2148,34 @@
             document.getElementById(id).classList.remove('show');
         }
 
+        // Deduplicate services in a list
+        function deduplicateServices(services) {
+            const seen = new Set();
+            const unique = [];
+            const dupes = [];
+            services.forEach(s => {
+                const key = `${s.provider}_${s.service}`;
+                if (seen.has(key)) {
+                    dupes.push(s);
+                } else {
+                    seen.add(key);
+                    unique.push(s);
+                }
+            });
+            return { unique, dupes };
+        }
+
         function doSavePreset() {
             const name = document.getElementById('presetNameInput').value.trim();
             if (!name) { alert('Enter a name'); return; }
-            presets[name] = [...selectedServices];
+            const { unique, dupes } = deduplicateServices(selectedServices);
+            if (dupes.length > 0) {
+                log(`⚠️ พบ ${dupes.length} โค้ดซ้ำ ลบออกอัตโนมัติ`, 'info');
+                dupes.forEach(s => log(`   🔄 #${s.service} (${s.provider})`, 'info'));
+            }
+            presets[name] = unique;
             localStorage.setItem('tb_presets', JSON.stringify(presets));
-            log(`💾 Preset "${name}" saved with ${selectedServices.length} services`, 'ok');
+            log(`💾 Preset "${name}" saved with ${unique.length} services`, 'ok');
             closeModal('savePresetModal');
             document.getElementById('presetNameInput').value = '';
         }
@@ -2138,7 +2183,61 @@
         function doLoadPreset() {
             const name = document.getElementById('presetSelector').value;
             if (presets[name]) {
-                selectedServices = [...presets[name]];
+                const presetServices = [...presets[name]];
+
+                if (allServices.length > 0) {
+                    const validServices = [];
+                    const deadServices = [];
+
+                    presetServices.forEach(ps => {
+                        const found = allServices.find(s =>
+                            s.service === ps.service && s.provider === ps.provider
+                        );
+                        if (found) {
+                            validServices.push(ps);
+                        } else {
+                            deadServices.push(ps);
+                        }
+                    });
+
+                    if (deadServices.length > 0) {
+                        // Show popup
+                        const listHtml = deadServices.map(s => {
+                            const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : 'mlk';
+                            return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
+                                <span>❌ <span class="provider-dot ${dotCls}"></span> <strong>#${s.service}</strong></span>
+                                <span style="color:var(--text-dim);">${(s.name || 'Unknown').substring(0, 40)}</span>
+                                <span style="color:var(--text-muted);">${s.provider}</span>
+                            </div>`;
+                        }).join('');
+                        document.getElementById('deadServicesList').innerHTML = listHtml;
+                        document.getElementById('deadServicesModal').classList.add('show');
+
+                        presets[name] = validServices;
+                        localStorage.setItem('tb_presets', JSON.stringify(presets));
+                        log(`💾 Preset "${name}" ลบ ${deadServices.length} service ที่ยกเลิกแล้ว`, 'info');
+                    }
+
+                    // Check duplicates
+                    const { unique: deduped, dupes } = deduplicateServices(validServices);
+                    if (dupes.length > 0) {
+                        log(`🔄 พบ ${dupes.length} โค้ดซ้ำใน preset "${name}" — ลบออกแล้ว`, 'info');
+                        presets[name] = deduped;
+                        localStorage.setItem('tb_presets', JSON.stringify(presets));
+                    }
+
+                    selectedServices = deduped;
+                } else {
+                    // No service list loaded, just dedup
+                    const { unique: deduped, dupes } = deduplicateServices(presetServices);
+                    if (dupes.length > 0) {
+                        log(`🔄 พบ ${dupes.length} โค้ดซ้ำ — ลบออกแล้ว`, 'info');
+                        presets[name] = deduped;
+                        localStorage.setItem('tb_presets', JSON.stringify(presets));
+                    }
+                    selectedServices = deduped;
+                }
+
                 renderSelected();
                 renderServices();
                 log(`📂 Preset "${name}" loaded with ${selectedServices.length} services`, 'ok');
@@ -2149,11 +2248,40 @@
         function doDeletePreset() {
             const name = document.getElementById('presetSelector').value;
             if (name && presets[name]) {
+                if (!confirm(`ลบ preset "${name}" ?`)) return;
                 delete presets[name];
                 localStorage.setItem('tb_presets', JSON.stringify(presets));
                 log(`🗑️ Preset "${name}" deleted`, 'ok');
                 showLoadPreset();
             }
+        }
+
+        function doRenamePreset() {
+            const oldName = document.getElementById('presetSelector').value;
+            if (!oldName || !presets[oldName]) return;
+            const newName = prompt('ชื่อใหม่:', oldName);
+            if (!newName || newName === oldName) return;
+            presets[newName] = presets[oldName];
+            delete presets[oldName];
+            localStorage.setItem('tb_presets', JSON.stringify(presets));
+            log(`✏️ Preset "${oldName}" เปลี่ยนชื่อเป็น "${newName}"`, 'ok');
+            showLoadPreset();
+        }
+
+        function doAddToPreset() {
+            const name = document.getElementById('presetSelector').value;
+            if (!name || !presets[name]) return;
+            if (selectedServices.length === 0) { alert('ยังไม่ได้เลือก service'); return; }
+            const existing = presets[name];
+            let addCount = 0;
+            selectedServices.forEach(s => {
+                const dup = existing.find(e => e.service === s.service && e.provider === s.provider);
+                if (!dup) { existing.push(s); addCount++; }
+            });
+            presets[name] = existing;
+            localStorage.setItem('tb_presets', JSON.stringify(presets));
+            log(`➕ เพิ่ม ${addCount} service เข้า preset "${name}" (รวม ${existing.length} ตัว)`, 'ok');
+            showLoadPreset();
         }
 
         // ===== PRESET SYNC =====
