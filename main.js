@@ -212,3 +212,75 @@ ipcMain.handle('save-presets', (event, presets) => {
         return false;
     }
 });
+
+// ===== PRESET SYNC via jsonblob.com (no auth needed) =====
+function jsonBlobRequest(method, blobId, data = null) {
+    return new Promise((resolve, reject) => {
+        const https = require('https');
+        const reqPath = blobId ? `/api/jsonBlob/${blobId}` : '/api/jsonBlob';
+        const postData = data ? JSON.stringify(data) : null;
+        const options = {
+            hostname: 'jsonblob.com',
+            path: reqPath,
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+        if (postData) options.headers['Content-Length'] = Buffer.byteLength(postData);
+
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => {
+                if (method === 'POST' && res.headers.location) {
+                    const id = res.headers.location.split('/').pop();
+                    resolve({ success: true, syncCode: id });
+                } else {
+                    try { resolve(JSON.parse(body)); }
+                    catch { resolve({ error: 'Invalid response' }); }
+                }
+            });
+        });
+        req.on('error', e => reject(e));
+        req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
+        if (postData) req.write(postData);
+        req.end();
+    });
+}
+
+// Upload presets → get sync code
+ipcMain.handle('sync-upload-presets', async (event, presets) => {
+    try {
+        let syncCode = getStore().get('sync_code', null);
+        if (syncCode) {
+            await jsonBlobRequest('PUT', syncCode, presets);
+            return { success: true, syncCode };
+        }
+        const result = await jsonBlobRequest('POST', null, presets);
+        if (result.syncCode) {
+            getStore().set('sync_code', result.syncCode);
+            return { success: true, syncCode: result.syncCode };
+        }
+        return { error: 'Failed to upload' };
+    } catch (e) {
+        return { error: e.message };
+    }
+});
+
+// Download presets by sync code
+ipcMain.handle('sync-download-presets', async (event, syncCode) => {
+    try {
+        if (!syncCode) return { error: 'No sync code provided' };
+        const presets = await jsonBlobRequest('GET', syncCode);
+        if (presets && !presets.error) {
+            getStore().set('presets', presets);
+            getStore().set('sync_code', syncCode);
+            return { success: true, presets };
+        }
+        return { error: 'Invalid sync code or data not found' };
+    } catch (e) {
+        return { error: e.message };
+    }
+});

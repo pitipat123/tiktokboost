@@ -545,6 +545,16 @@
             color: #fff;
         }
 
+        .btn-sync-upload {
+            background: #8b5cf6;
+            color: #fff;
+        }
+
+        .btn-sync-download {
+            background: #06b6d4;
+            color: #fff;
+        }
+
         .clear-all {
             text-align: center;
             padding: 4px;
@@ -1186,6 +1196,21 @@
                             <button class="btn-save-preset" onclick="showSavePreset()">💾 Save Preset</button>
                             <button class="btn-load-preset" onclick="showLoadPreset()">📂 Load Preset</button>
                         </div>
+                        <div class="preset-btns" style="margin-top:0;">
+                            <button class="btn-sync-upload" onclick="syncUploadPresets()" id="btnSyncUp">☁️ Upload
+                                Sync</button>
+                            <button class="btn-sync-download" onclick="syncDownloadPresets()" id="btnSyncDown">☁️
+                                Download Sync</button>
+                        </div>
+
+                        <div style="display:flex;gap:6px;align-items:center;margin-top:4px;">
+                            <input type="text" id="syncCodeInput" placeholder="Sync Code (paste here to download)"
+                                style="flex:1;font-size:11px;padding:6px 8px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--cyan);font-family:monospace;">
+                            <button onclick="copySyncCode()"
+                                style="padding:6px 10px;background:var(--border);border:none;border-radius:4px;color:var(--text);cursor:pointer;font-size:11px;">📋
+                                Copy</button>
+                        </div>
+                        <p id="syncStatus" style="font-size:10px;color:var(--text-muted);margin-top:2px;"></p>
 
                         <div class="clear-all" onclick="clearSelected()">✖ Clear All</div>
 
@@ -1321,7 +1346,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.2.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.3.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2066,6 +2091,77 @@
                 log(`🗑️ Preset "${name}" deleted`, 'ok');
                 showLoadPreset();
             }
+        }
+
+        // ===== PRESET SYNC =====
+        function copySyncCode() {
+            const code = document.getElementById('syncCodeInput').value;
+            if (code) { navigator.clipboard.writeText(code); log('📋 Sync code copied!', 'ok'); }
+        }
+
+        async function syncUploadPresets() {
+            const btn = document.getElementById('btnSyncUp');
+            const statusEl = document.getElementById('syncStatus');
+            btn.disabled = true;
+            btn.textContent = '⏳ Uploading...';
+            log('☁️ Uploading presets to cloud...', 'info');
+
+            try {
+                const result = await window.electronAPI.syncUploadPresets(presets);
+                if (result.success) {
+                    document.getElementById('syncCodeInput').value = result.syncCode;
+                    statusEl.textContent = `✅ Uploaded! Share this Sync Code to other machines.`;
+                    statusEl.style.color = 'var(--green)';
+                    log(`✅ Presets uploaded! Sync Code: ${result.syncCode}`, 'ok');
+                } else {
+                    statusEl.textContent = `❌ ${result.error}`;
+                    statusEl.style.color = 'var(--red)';
+                    log(`❌ Upload failed: ${result.error}`, 'err');
+                }
+            } catch (e) {
+                log(`❌ Upload error: ${e.message}`, 'err');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '☁️ Upload Sync';
+        }
+
+        async function syncDownloadPresets() {
+            const btn = document.getElementById('btnSyncDown');
+            const statusEl = document.getElementById('syncStatus');
+            const syncCode = document.getElementById('syncCodeInput').value.trim();
+
+            if (!syncCode) {
+                statusEl.textContent = '⚠️ Please enter a Sync Code first!';
+                statusEl.style.color = 'var(--orange)';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Downloading...';
+            log('☁️ Downloading presets from cloud...', 'info');
+
+            try {
+                const result = await window.electronAPI.syncDownloadPresets(syncCode);
+                if (result.success) {
+                    const cloudPresets = result.presets;
+                    const mergedCount = Object.keys(cloudPresets).length;
+                    Object.assign(presets, cloudPresets);
+                    localStorage.setItem('tb_presets', JSON.stringify(presets));
+                    statusEl.textContent = `✅ Downloaded ${mergedCount} presets!`;
+                    statusEl.style.color = 'var(--green)';
+                    log(`✅ Downloaded ${mergedCount} presets from cloud`, 'ok');
+                } else {
+                    statusEl.textContent = `❌ ${result.error}`;
+                    statusEl.style.color = 'var(--red)';
+                    log(`❌ Download failed: ${result.error}`, 'err');
+                }
+            } catch (e) {
+                log(`❌ Download error: ${e.message}`, 'err');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '☁️ Download Sync';
         }
 
         // ===== SAVE / LOAD LIST =====

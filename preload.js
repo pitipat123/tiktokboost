@@ -16,4 +16,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     checkForUpdates: () => ipcRenderer.invoke('check-for-updates'),
     onUpdateStatus: (callback) => ipcRenderer.on('update-status', (_, status) => callback(status)),
     onUpdateProgress: (callback) => ipcRenderer.on('update-progress', (_, percent) => callback(percent)),
+
+    // Preset Sync
+    syncUploadPresets: (presets) => ipcRenderer.invoke('sync-upload-presets', presets),
+    syncDownloadPresets: (syncCode) => ipcRenderer.invoke('sync-download-presets', syncCode),
 });
