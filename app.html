@@ -1358,7 +1358,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.5.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.5.1</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2183,25 +2183,40 @@
         function doLoadPreset() {
             const name = document.getElementById('presetSelector').value;
             if (presets[name]) {
-                const presetServices = [...presets[name]];
+                let presetServices = [...presets[name]];
 
+                // Dedup first
+                const { unique: deduped, dupes } = deduplicateServices(presetServices);
+                if (dupes.length > 0) {
+                    log(`🔄 พบ ${dupes.length} โค้ดซ้ำ ลบออกแล้ว`, 'info');
+                    presetServices = deduped;
+                    presets[name] = deduped;
+                    localStorage.setItem('tb_presets', JSON.stringify(presets));
+                }
+
+                // Check dead services ONLY for providers that were refreshed
                 if (allServices.length > 0) {
-                    const validServices = [];
+                    const refreshedProviders = [...new Set(allServices.map(s => s.provider))];
                     const deadServices = [];
+                    const keptServices = [];
 
                     presetServices.forEach(ps => {
-                        const found = allServices.find(s =>
-                            s.service === ps.service && s.provider === ps.provider
-                        );
-                        if (found) {
-                            validServices.push(ps);
+                        if (!refreshedProviders.includes(ps.provider)) {
+                            // Provider not refreshed — keep as-is, don't check
+                            keptServices.push(ps);
                         } else {
-                            deadServices.push(ps);
+                            const found = allServices.find(s =>
+                                String(s.service) === String(ps.service) && s.provider === ps.provider
+                            );
+                            if (found) {
+                                keptServices.push(ps);
+                            } else {
+                                deadServices.push(ps);
+                            }
                         }
                     });
 
                     if (deadServices.length > 0) {
-                        // Show popup
                         const listHtml = deadServices.map(s => {
                             const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : 'mlk';
                             return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
@@ -2213,29 +2228,15 @@
                         document.getElementById('deadServicesList').innerHTML = listHtml;
                         document.getElementById('deadServicesModal').classList.add('show');
 
-                        presets[name] = validServices;
+                        // Save without dead services
+                        presets[name] = keptServices;
                         localStorage.setItem('tb_presets', JSON.stringify(presets));
-                        log(`💾 Preset "${name}" ลบ ${deadServices.length} service ที่ยกเลิกแล้ว`, 'info');
+                        log(`💾 Preset "${name}" ลบ ${deadServices.length} service ที่ยกเลิกแล้ว (เช็คเฉพาะเว็บที่ Refresh แล้ว)`, 'info');
                     }
 
-                    // Check duplicates
-                    const { unique: deduped, dupes } = deduplicateServices(validServices);
-                    if (dupes.length > 0) {
-                        log(`🔄 พบ ${dupes.length} โค้ดซ้ำใน preset "${name}" — ลบออกแล้ว`, 'info');
-                        presets[name] = deduped;
-                        localStorage.setItem('tb_presets', JSON.stringify(presets));
-                    }
-
-                    selectedServices = deduped;
+                    selectedServices = keptServices;
                 } else {
-                    // No service list loaded, just dedup
-                    const { unique: deduped, dupes } = deduplicateServices(presetServices);
-                    if (dupes.length > 0) {
-                        log(`🔄 พบ ${dupes.length} โค้ดซ้ำ — ลบออกแล้ว`, 'info');
-                        presets[name] = deduped;
-                        localStorage.setItem('tb_presets', JSON.stringify(presets));
-                    }
-                    selectedServices = deduped;
+                    selectedServices = presetServices;
                 }
 
                 renderSelected();
