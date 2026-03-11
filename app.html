@@ -3010,31 +3010,38 @@
                 const catItems = [];
 
                 if (spreadMode) {
-                    // SPREAD MODE: pick 1 cheapest per provider, split evenly
-                    const perProvider = {};
+                    // SPREAD MODE: group by provider, randomly pick multiple services per provider
+                    const byProvider = {};
                     catServices.forEach(s => {
-                        if (!perProvider[s.provider]) perProvider[s.provider] = s;
+                        if (!byProvider[s.provider]) byProvider[s.provider] = [];
+                        byProvider[s.provider].push(s);
                     });
-                    const providerSvcs = Object.values(perProvider);
-                    const qtyEach = Math.floor(wanted / providerSvcs.length);
-                    let leftover = wanted - (qtyEach * providerSvcs.length);
+                    const providerNames = Object.keys(byProvider);
+                    const qtyPerProvider = Math.floor(wanted / providerNames.length);
+                    let leftover = wanted - (qtyPerProvider * providerNames.length);
 
-                    providerSvcs.forEach((svc, idx) => {
-                        let qty = qtyEach + (idx === 0 ? leftover : 0);
-                        if (qty <= 0) return;
-                        const maxPerOrder = svc.max || 1000000;
-                        const minPerOrder = svc.min || 1;
-                        if (qty < minPerOrder) qty = minPerOrder;
+                    providerNames.forEach((prov, pIdx) => {
+                        let provQty = qtyPerProvider + (pIdx === 0 ? leftover : 0);
+                        if (provQty <= 0) return;
 
-                        // Split into multiple orders if qty > max
-                        while (qty > 0) {
-                            const orderQty = Math.min(qty, maxPerOrder);
-                            const cost = (orderQty / 1000) * svc.rate;
-                            if (budget !== Infinity && totalCost + cost > budget) break;
-                            catItems.push({ svc, qty: orderQty, cost });
+                        // Shuffle services randomly for this provider
+                        const provServices = byProvider[prov].sort(() => Math.random() - 0.5);
+                        const numCodes = Math.min(provServices.length, Math.max(1, Math.ceil(provQty / 10000)));
+                        const qtyPerCode = Math.floor(provQty / numCodes);
+                        let codeLeftover = provQty - (qtyPerCode * numCodes);
+
+                        for (let i = 0; i < numCodes; i++) {
+                            const svc = provServices[i];
+                            let qty = qtyPerCode + (i === 0 ? codeLeftover : 0);
+                            const maxPerOrder = svc.max || 1000000;
+                            const minPerOrder = svc.min || 1;
+                            if (qty < minPerOrder) qty = minPerOrder;
+                            if (qty > maxPerOrder) qty = maxPerOrder;
+                            const cost = (qty / 1000) * svc.rate;
+                            if (budget !== Infinity && totalCost + cost > budget) continue;
+                            catItems.push({ svc, qty, cost });
                             totalCost += cost;
                             catCost += cost;
-                            qty -= orderQty;
                         }
                     });
                 } else {
