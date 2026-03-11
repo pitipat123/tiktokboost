@@ -1195,6 +1195,8 @@
                         <div class="preset-btns">
                             <button class="btn-save-preset" onclick="showSavePreset()">💾 Save Preset</button>
                             <button class="btn-load-preset" onclick="showLoadPreset()">📂 Load Preset</button>
+                            <button class="btn-load-preset" style="background:var(--accent);color:#fff;"
+                                onclick="showSmartPreset()">🤖 Smart Preset</button>
                         </div>
                         <div class="preset-btns" style="margin-top:0;">
                             <button class="btn-sync-upload" onclick="syncUploadPresets()" id="btnSyncUp">☁️ Upload
@@ -1358,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.5.2</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.6.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1535,6 +1537,89 @@
                 <button style="background:var(--red);color:#fff;" onclick="doDeletePreset()">🗑️ Delete</button>
                 <button style="background:var(--border);color:var(--text);"
                     onclick="closeModal('loadPresetModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Preset Generator Modal -->
+    <div class="modal-overlay" id="smartPresetModal">
+        <div class="modal-box" style="max-width:550px;">
+            <h3>🤖 Smart Preset Generator</h3>
+            <p style="font-size:11px;color:var(--text-dim);margin-bottom:10px;">ระบุจำนวนที่ต้องการ + งบประมาณ
+                ระบบจะจัดหา service ที่ถูกที่สุดให้อัตโนมัติ</p>
+
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;">📌 เว็บที่ใช้:</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="iPlusView" checked> <span
+                        class="provider-dot ipv"></span>iPlusView</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="KMM" checked> <span
+                        class="provider-dot kmm"></span>KMM</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="Ads4U" checked> <span
+                        class="provider-dot a4u"></span>Ads4U</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="NewLike"> <span
+                        class="provider-dot nlk"></span>NewLike</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="MeeLike"> <span
+                        class="provider-dot mlk"></span>MeeLike</label>
+            </div>
+
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;">🎯 จำนวนที่ต้องการ:
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">❤️
+                        Likes</span><input type="number" id="spLikes" placeholder="e.g. 100000"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">👁️
+                        Views</span><input type="number" id="spViews" placeholder="e.g. 50000"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">🔁
+                        Shares</span><input type="number" id="spShares" placeholder="e.g. 2000"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">💾
+                        Saves</span><input type="number" id="spSaves" placeholder="e.g. 2000"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">💬
+                        Comments</span><input type="number" id="spComments" placeholder="e.g. 500"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">👥
+                        Followers</span><input type="number" id="spFollowers" placeholder="e.g. 5000"
+                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                <span style="font-size:12px;min-width:70px;">💰 Budget</span>
+                <input type="number" id="spBudget" placeholder="Max budget (฿)"
+                    style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <span style="font-size:10px;color:var(--text-muted);">฿ (ไม่ระบุ = ไม่จำกัด)</span>
+            </div>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                    <input type="checkbox" id="spSpread">
+                    🔀 <strong>กระจายยอดหลายเว็บ</strong>
+                    <span style="font-size:10px;color:var(--text-muted);">(แบ่งเท่าๆ กันจากทุกเว็บที่เลือก)</span>
+                </label>
+            </div>
+
+            <div id="spResult"
+                style="display:none;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px;padding:8px;margin-bottom:10px;max-height:200px;overflow-y:auto;">
+            </div>
+
+            <div class="modal-btns">
+                <button style="background:var(--green);color:#000;" onclick="generateSmartPreset()">🤖 Generate</button>
+                <button id="spApplyBtn" style="background:var(--accent);color:#fff;display:none;"
+                    onclick="applySmartPreset()">✅ Apply to Selection</button>
+                <button style="background:var(--border);color:var(--text);"
+                    onclick="closeModal('smartPresetModal')">Close</button>
             </div>
         </div>
     </div>
@@ -2809,6 +2894,223 @@
                     text.textContent = pct + '%';
                 });
             }
+        }
+
+        // ===== SMART PRESET GENERATOR =====
+        let smartPresetResult = [];
+
+        function showSmartPreset() {
+            if (allServices.length === 0) {
+                alert('กรุณากด Refresh Services ก่อน เพื่อดึงรายการ service จากเว็บ');
+                return;
+            }
+            document.getElementById('spResult').style.display = 'none';
+            document.getElementById('spApplyBtn').style.display = 'none';
+            document.getElementById('smartPresetModal').classList.add('show');
+        }
+
+        function generateSmartPreset() {
+            const providers = [...document.querySelectorAll('.sp-provider:checked')].map(c => c.value);
+            if (providers.length === 0) { alert('เลือกเว็บอย่างน้อย 1 เว็บ'); return; }
+
+            const catKeywords = {
+                'Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
+                'Views': ['view', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
+                'Shares': ['share', 'แชร์'],
+                'Saves': ['save', 'บันทึก'],
+                'Comments': ['comment', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
+                'Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม']
+            };
+            const catIcons = { Likes: '❤️', Views: '👁️', Shares: '🔁', Saves: '💾', Comments: '💬', Followers: '👥' };
+            const catInputs = {
+                Likes: parseInt(document.getElementById('spLikes').value) || 0,
+                Views: parseInt(document.getElementById('spViews').value) || 0,
+                Shares: parseInt(document.getElementById('spShares').value) || 0,
+                Saves: parseInt(document.getElementById('spSaves').value) || 0,
+                Comments: parseInt(document.getElementById('spComments').value) || 0,
+                Followers: parseInt(document.getElementById('spFollowers').value) || 0
+            };
+            const budget = parseFloat(document.getElementById('spBudget').value) || Infinity;
+            const spreadMode = document.getElementById('spSpread').checked;
+
+            // Classify services by category
+            function classifyService(s) {
+                const nameLow = (s.name || '').toLowerCase();
+                const catLow = (s.category || '').toLowerCase();
+                for (const [cat, keywords] of Object.entries(catKeywords)) {
+                    if (keywords.some(kw => nameLow.includes(kw) || catLow.includes(kw))) return cat;
+                }
+                return null;
+            }
+
+            // Filter available services from selected providers
+            const available = allServices.filter(s => providers.includes(s.provider));
+
+            // Collect service IDs already used in existing presets
+            const usedServiceKeys = new Set();
+            Object.values(presets).forEach(presetList => {
+                (presetList || []).forEach(ps => {
+                    usedServiceKeys.add(`${ps.provider}_${ps.id || ps.service}`);
+                });
+            });
+
+            // Parse delivery time string to minutes for sorting
+            function parseTimeToMinutes(timeStr) {
+                if (!timeStr || timeStr === 'N/A') return 99999;
+                const str = String(timeStr).toLowerCase();
+                let total = 0;
+                const hours = str.match(/(\d+)\s*h/);
+                const mins = str.match(/(\d+)\s*m/);
+                if (hours) total += parseInt(hours[1]) * 60;
+                if (mins) total += parseInt(mins[1]);
+                if (total === 0 && /\d/.test(str)) total = parseInt(str) || 99999;
+                return total;
+            }
+
+            smartPresetResult = [];
+            let totalCost = 0;
+            let html = '';
+
+            for (const [cat, wanted] of Object.entries(catInputs)) {
+                if (wanted <= 0) continue;
+
+                // Find services: rate > 0, max >= 100, smart sort
+                const catServices = available
+                    .filter(s => classifyService(s) === cat && (s.max || 1) >= 100 && s.rate > 0)
+                    .sort((a, b) => {
+                        // 1. Prefer NOT used in other presets
+                        const aUsed = usedServiceKeys.has(`${a.provider}_${a.id}`) ? 1 : 0;
+                        const bUsed = usedServiceKeys.has(`${b.provider}_${b.id}`) ? 1 : 0;
+                        if (aUsed !== bUsed) return aUsed - bUsed;
+                        // 2. Prefer with delivery time data
+                        const aHasTime = a.time && a.time !== 'N/A' ? 0 : 1;
+                        const bHasTime = b.time && b.time !== 'N/A' ? 0 : 1;
+                        if (aHasTime !== bHasTime) return aHasTime - bHasTime;
+                        // 3. Faster delivery first
+                        const aTime = parseTimeToMinutes(a.time);
+                        const bTime = parseTimeToMinutes(b.time);
+                        if (aTime !== bTime) return aTime - bTime;
+                        // 4. Cheapest rate
+                        return a.rate - b.rate;
+                    });
+
+                // Fallback: if no services with max>=100, use any
+                if (catServices.length === 0) {
+                    const fallback = available.filter(s => classifyService(s) === cat).sort((a, b) => a.rate - b.rate);
+                    if (fallback.length > 0) catServices.push(...fallback);
+                }
+
+                if (catServices.length === 0) {
+                    html += `<div style="padding:4px 0;font-size:12px;color:var(--red);">❌ ${catIcons[cat]} ${cat}: ไม่มี service ที่ตรง</div>`;
+                    continue;
+                }
+
+                let remaining = wanted;
+                let catCost = 0;
+                const catItems = [];
+
+                if (spreadMode) {
+                    // SPREAD MODE: pick 1 cheapest per provider, split evenly
+                    const perProvider = {};
+                    catServices.forEach(s => {
+                        if (!perProvider[s.provider]) perProvider[s.provider] = s;
+                    });
+                    const providerSvcs = Object.values(perProvider);
+                    const qtyEach = Math.floor(wanted / providerSvcs.length);
+                    let leftover = wanted - (qtyEach * providerSvcs.length);
+
+                    providerSvcs.forEach((svc, idx) => {
+                        let qty = qtyEach + (idx === 0 ? leftover : 0);
+                        if (qty <= 0) return;
+                        const maxPerOrder = svc.max || 1000000;
+                        const minPerOrder = svc.min || 1;
+                        if (qty < minPerOrder) qty = minPerOrder;
+
+                        // Split into multiple orders if qty > max
+                        while (qty > 0) {
+                            const orderQty = Math.min(qty, maxPerOrder);
+                            const cost = (orderQty / 1000) * svc.rate;
+                            if (budget !== Infinity && totalCost + cost > budget) break;
+                            catItems.push({ svc, qty: orderQty, cost });
+                            totalCost += cost;
+                            catCost += cost;
+                            qty -= orderQty;
+                        }
+                    });
+                } else {
+                    // CHEAPEST MODE: fill from cheapest first, one entry per batch
+                    for (const svc of catServices) {
+                        if (remaining <= 0) break;
+                        const maxPerOrder = svc.max || 1000000;
+                        const minPerOrder = svc.min || 1;
+
+                        while (remaining > 0) {
+                            let qty = Math.min(remaining, maxPerOrder);
+                            if (qty < minPerOrder) qty = minPerOrder;
+                            const cost = (qty / 1000) * svc.rate;
+
+                            if (budget !== Infinity && totalCost + cost > budget) {
+                                const maxAfford = ((budget - totalCost) / svc.rate) * 1000;
+                                if (maxAfford >= minPerOrder) {
+                                    qty = Math.min(Math.floor(maxAfford), maxPerOrder);
+                                    const adjCost = (qty / 1000) * svc.rate;
+                                    catItems.push({ svc, qty, cost: adjCost });
+                                    totalCost += adjCost;
+                                    catCost += adjCost;
+                                }
+                                remaining = 0;
+                                break;
+                            }
+
+                            catItems.push({ svc, qty, cost });
+                            totalCost += cost;
+                            catCost += cost;
+                            remaining -= qty;
+                            if (remaining <= 0) break;
+                        }
+                        if (remaining <= 0) break;
+                    }
+                }
+
+                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : 'mlk';
+
+                html += `<div style="padding:4px 0;border-bottom:1px solid var(--border);">
+                    <div style="font-size:12px;font-weight:600;">${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} → ฿${catCost.toFixed(2)}</div>`;
+                catItems.forEach(item => {
+                    html += `<div style="font-size:11px;color:var(--text-dim);padding-left:16px;">
+                        <span class="provider-dot ${dotCls(item.svc.provider)}"></span>
+                        #${item.svc.id} ${item.svc.provider} — ${item.qty.toLocaleString()} pcs — ฿${item.cost.toFixed(2)}
+                    </div>`;
+                    smartPresetResult.push({
+                        provider: item.svc.provider,
+                        id: String(item.svc.id),
+                        name: item.svc.name,
+                        rate: item.svc.rate,
+                        qty: item.qty
+                    });
+                });
+                html += '</div>';
+            }
+
+            if (smartPresetResult.length === 0) {
+                html = '<p style="color:var(--red);font-size:12px;">ไม่พบ service ที่ตรงกับที่ต้องการ</p>';
+            } else {
+                const budgetTxt = budget === Infinity ? 'ไม่จำกัด' : `฿${budget.toLocaleString()}`;
+                html = `<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px;">💰 Total: ฿${totalCost.toFixed(2)} / ${budgetTxt} | ${smartPresetResult.length} services</div>` + html;
+            }
+
+            const el = document.getElementById('spResult');
+            el.innerHTML = html;
+            el.style.display = 'block';
+            document.getElementById('spApplyBtn').style.display = smartPresetResult.length > 0 ? 'inline-block' : 'none';
+        }
+
+        function applySmartPreset() {
+            selectedServices = [...smartPresetResult];
+            renderSelected();
+            renderServices();
+            log(`🤖 Smart Preset applied: ${smartPresetResult.length} services`, 'ok');
+            closeModal('smartPresetModal');
         }
     </script>
 </body>
