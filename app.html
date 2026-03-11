@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.6.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.6.1</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1567,33 +1567,44 @@
                         class="provider-dot mlk"></span>MeeLike</label>
             </div>
 
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px;font-weight:600;">🎯 จำนวนที่ต้องการ:
+
+            <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;font-weight:600;">🎯 จำนวน + ต่อโค้ด:</div>
+            <div style="display:grid;grid-template-columns:75px 1fr 70px;gap:3px 6px;margin-bottom:10px;align-items:center;">
+                <span style="font-size:9px;color:var(--text-muted);"></span>
+                <span style="font-size:9px;color:var(--text-muted);text-align:center;">จำนวนรวม</span>
+                <span style="font-size:9px;color:var(--text-muted);text-align:center;">ต่อโค้ด</span>
+
+                <span style="font-size:12px;">❤️ Likes</span>
+                <input type="number" id="spLikes" placeholder="100000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcLikes" value="1000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
+
+                <span style="font-size:12px;">👁️ Views</span>
+                <input type="number" id="spViews" placeholder="50000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcViews" value="1000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+
+                <span style="font-size:12px;">🔁 Shares</span>
+                <input type="number" id="spShares" placeholder="2000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcShares" value="100" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
+
+                <span style="font-size:12px;">💾 Saves</span>
+                <input type="number" id="spSaves" placeholder="2000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcSaves" value="100" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
+
+                <span style="font-size:12px;">💬 Comments</span>
+                <input type="number" id="spComments" placeholder="500" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcComments" value="100" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
+
+                <span style="font-size:12px;">👥 Followers</span>
+                <input type="number" id="spFollowers" placeholder="5000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
+                <input type="number" id="spPcFollowers" value="500" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">❤️
-                        Likes</span><input type="number" id="spLikes" placeholder="e.g. 100000"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">👁️
-                        Views</span><input type="number" id="spViews" placeholder="e.g. 50000"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">🔁
-                        Shares</span><input type="number" id="spShares" placeholder="e.g. 2000"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">💾
-                        Saves</span><input type="number" id="spSaves" placeholder="e.g. 2000"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">💬
-                        Comments</span><input type="number" id="spComments" placeholder="e.g. 500"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
-                <div style="display:flex;align-items:center;gap:6px;"><span style="font-size:12px;min-width:70px;">👥
-                        Followers</span><input type="number" id="spFollowers" placeholder="e.g. 5000"
-                        style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                </div>
+
+            <div style="margin-bottom:10px;">
+                <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                    <input type="checkbox" id="spSpread">
+                    🔀 <strong>กระจายยอดหลายเว็บ</strong>
+                    <span style="font-size:10px;color:var(--text-muted);">(แบ่งเท่าๆ กันจากทุกเว็บที่เลือก)</span>
+                </label>
             </div>
 
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
@@ -1601,13 +1612,6 @@
                 <input type="number" id="spBudget" placeholder="Max budget (฿)"
                     style="flex:1;padding:6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
                 <span style="font-size:10px;color:var(--text-muted);">฿ (ไม่ระบุ = ไม่จำกัด)</span>
-            </div>
-            <div style="margin-bottom:10px;">
-                <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;">
-                    <input type="checkbox" id="spSpread">
-                    🔀 <strong>กระจายยอดหลายเว็บ</strong>
-                    <span style="font-size:10px;color:var(--text-muted);">(แบ่งเท่าๆ กันจากทุกเว็บที่เลือก)</span>
-                </label>
             </div>
 
             <div id="spResult"
@@ -2914,12 +2918,12 @@
             if (providers.length === 0) { alert('เลือกเว็บอย่างน้อย 1 เว็บ'); return; }
 
             const catKeywords = {
-                'Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
-                'Views': ['view', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
-                'Shares': ['share', 'แชร์'],
-                'Saves': ['save', 'บันทึก'],
-                'Comments': ['comment', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
-                'Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม']
+                'Likes': ['like', 'likes', 'ไลค์', 'ไลก์', 'ถูกใจ', 'หัวใจ'],
+                'Views': ['view', 'views', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
+                'Shares': ['share', 'shares', 'แชร์', 'แชร์วิ'],
+                'Saves': ['save', 'saves', 'เซฟ', 'บันทึก', 'favourite', 'favorites'],
+                'Comments': ['comment', 'comments', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
+                'Followers': ['follow', 'follower', 'followers', 'ผู้ติดตาม', 'ติดตาม']
             };
             const catIcons = { Likes: '❤️', Views: '👁️', Shares: '🔁', Saves: '💾', Comments: '💬', Followers: '👥' };
             const catInputs = {
@@ -2971,6 +2975,24 @@
             let totalCost = 0;
             let html = '';
 
+            // Pre-calculate budget allocation per category (proportional)
+            const catBudgets = {};
+            if (budget !== Infinity) {
+                let totalEstCost = 0;
+                const estCosts = {};
+                for (const [cat, wanted] of Object.entries(catInputs)) {
+                    if (wanted <= 0) continue;
+                    const catSvcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
+                    if (catSvcs.length === 0) { estCosts[cat] = 0; continue; }
+                    const cheapest = Math.min(...catSvcs.map(s => s.rate));
+                    estCosts[cat] = (wanted / 1000) * cheapest;
+                    totalEstCost += estCosts[cat];
+                }
+                for (const [cat, est] of Object.entries(estCosts)) {
+                    catBudgets[cat] = totalEstCost > 0 ? (est / totalEstCost) * budget : budget;
+                }
+            }
+
             for (const [cat, wanted] of Object.entries(catInputs)) {
                 if (wanted <= 0) continue;
 
@@ -3008,6 +3030,8 @@
                 let remaining = wanted;
                 let catCost = 0;
                 const catItems = [];
+                const myCatBudget = catBudgets[cat] || Infinity;
+                let budgetExhausted = false;
 
                 if (spreadMode) {
                     // SPREAD MODE: group by provider, randomly pick multiple services per provider
@@ -3026,7 +3050,8 @@
 
                         // Shuffle services randomly for this provider
                         const provServices = byProvider[prov].sort(() => Math.random() - 0.5);
-                        const numCodes = Math.min(provServices.length, Math.max(1, Math.ceil(provQty / 10000)));
+                        const perCode = parseInt(document.getElementById('spPc' + cat).value) || 1000;
+                        const numCodes = Math.min(provServices.length, Math.max(1, Math.ceil(provQty / perCode)));
                         const qtyPerCode = Math.floor(provQty / numCodes);
                         let codeLeftover = provQty - (qtyPerCode * numCodes);
 
@@ -3038,7 +3063,7 @@
                             if (qty < minPerOrder) qty = minPerOrder;
                             if (qty > maxPerOrder) qty = maxPerOrder;
                             const cost = (qty / 1000) * svc.rate;
-                            if (budget !== Infinity && totalCost + cost > budget) continue;
+                            if (catCost + cost > myCatBudget) { budgetExhausted = true; continue; }
                             catItems.push({ svc, qty, cost });
                             totalCost += cost;
                             catCost += cost;
@@ -3056,8 +3081,8 @@
                             if (qty < minPerOrder) qty = minPerOrder;
                             const cost = (qty / 1000) * svc.rate;
 
-                            if (budget !== Infinity && totalCost + cost > budget) {
-                                const maxAfford = ((budget - totalCost) / svc.rate) * 1000;
+                            if (catCost + cost > myCatBudget) {
+                                const maxAfford = ((myCatBudget - catCost) / svc.rate) * 1000;
                                 if (maxAfford >= minPerOrder) {
                                     qty = Math.min(Math.floor(maxAfford), maxPerOrder);
                                     const adjCost = (qty / 1000) * svc.rate;
@@ -3065,6 +3090,7 @@
                                     totalCost += adjCost;
                                     catCost += adjCost;
                                 }
+                                budgetExhausted = true;
                                 remaining = 0;
                                 break;
                             }
@@ -3080,6 +3106,15 @@
                 }
 
                 const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : 'mlk';
+
+                if (catItems.length === 0) {
+                    if (budgetExhausted) {
+                        html += `<div style="padding:4px 0;font-size:12px;color:var(--orange);">⚠️ ${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} — งบไม่พอ (budget ฿${myCatBudget.toFixed(0)} สำหรับหมวดนี้)</div>`;
+                    } else {
+                        html += `<div style="padding:4px 0;font-size:12px;color:var(--orange);">⚠️ ${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} — ไม่เจอ service ที่จัดส่งได้ (rate=0 หรือ max น้อยเกินไป)</div>`;
+                    }
+                    continue;
+                }
 
                 html += `<div style="padding:4px 0;border-bottom:1px solid var(--border);">
                     <div style="font-size:12px;font-weight:600;">${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} → ฿${catCost.toFixed(2)}</div>`;
