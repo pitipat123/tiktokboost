@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.6.1</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.6.2</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -3032,9 +3032,10 @@
                 const catItems = [];
                 const myCatBudget = catBudgets[cat] || Infinity;
                 let budgetExhausted = false;
+                const perCode = parseInt(document.getElementById('spPc' + cat).value) || 1000;
 
                 if (spreadMode) {
-                    // SPREAD MODE: group by provider, randomly pick multiple services per provider
+                    // SPREAD MODE: group by provider, randomly pick multiple codes per provider
                     const byProvider = {};
                     catServices.forEach(s => {
                         if (!byProvider[s.provider]) byProvider[s.provider] = [];
@@ -3048,20 +3049,18 @@
                         let provQty = qtyPerProvider + (pIdx === 0 ? leftover : 0);
                         if (provQty <= 0) return;
 
-                        // Shuffle services randomly for this provider
                         const provServices = byProvider[prov].sort(() => Math.random() - 0.5);
-                        const perCode = parseInt(document.getElementById('spPc' + cat).value) || 1000;
                         const numCodes = Math.min(provServices.length, Math.max(1, Math.ceil(provQty / perCode)));
-                        const qtyPerCode = Math.floor(provQty / numCodes);
-                        let codeLeftover = provQty - (qtyPerCode * numCodes);
+                        const qtyPerSlot = Math.floor(provQty / numCodes);
+                        let slotLeftover = provQty - (qtyPerSlot * numCodes);
 
                         for (let i = 0; i < numCodes; i++) {
                             const svc = provServices[i];
-                            let qty = qtyPerCode + (i === 0 ? codeLeftover : 0);
-                            const maxPerOrder = svc.max || 1000000;
-                            const minPerOrder = svc.min || 1;
-                            if (qty < minPerOrder) qty = minPerOrder;
-                            if (qty > maxPerOrder) qty = maxPerOrder;
+                            let qty = qtyPerSlot + (i === 0 ? slotLeftover : 0);
+                            const maxO = svc.max || 1000000;
+                            const minO = svc.min || 1;
+                            if (qty < minO) qty = minO;
+                            if (qty > maxO) qty = maxO;
                             const cost = (qty / 1000) * svc.rate;
                             if (catCost + cost > myCatBudget) { budgetExhausted = true; continue; }
                             catItems.push({ svc, qty, cost });
@@ -3070,38 +3069,36 @@
                         }
                     });
                 } else {
-                    // CHEAPEST MODE: fill from cheapest first, one entry per batch
-                    for (const svc of catServices) {
-                        if (remaining <= 0) break;
-                        const maxPerOrder = svc.max || 1000000;
-                        const minPerOrder = svc.min || 1;
+                    // CHEAPEST MODE: pick multiple codes sorted by cheapest, each gets perCode qty
+                    const numCodes = Math.min(catServices.length, Math.max(1, Math.ceil(wanted / perCode)));
+                    const qtyPerSlot = Math.floor(wanted / numCodes);
+                    let slotLeftover = wanted - (qtyPerSlot * numCodes);
 
-                        while (remaining > 0) {
-                            let qty = Math.min(remaining, maxPerOrder);
-                            if (qty < minPerOrder) qty = minPerOrder;
-                            const cost = (qty / 1000) * svc.rate;
+                    for (let i = 0; i < numCodes; i++) {
+                        const svc = catServices[i % catServices.length];
+                        let qty = qtyPerSlot + (i === 0 ? slotLeftover : 0);
+                        const maxO = svc.max || 1000000;
+                        const minO = svc.min || 1;
+                        if (qty < minO) qty = minO;
+                        if (qty > maxO) qty = maxO;
+                        const cost = (qty / 1000) * svc.rate;
 
-                            if (catCost + cost > myCatBudget) {
-                                const maxAfford = ((myCatBudget - catCost) / svc.rate) * 1000;
-                                if (maxAfford >= minPerOrder) {
-                                    qty = Math.min(Math.floor(maxAfford), maxPerOrder);
-                                    const adjCost = (qty / 1000) * svc.rate;
-                                    catItems.push({ svc, qty, cost: adjCost });
-                                    totalCost += adjCost;
-                                    catCost += adjCost;
-                                }
-                                budgetExhausted = true;
-                                remaining = 0;
-                                break;
+                        if (catCost + cost > myCatBudget) {
+                            const maxAfford = ((myCatBudget - catCost) / svc.rate) * 1000;
+                            if (maxAfford >= minO) {
+                                qty = Math.min(Math.floor(maxAfford), maxO);
+                                const adjCost = (qty / 1000) * svc.rate;
+                                catItems.push({ svc, qty, cost: adjCost });
+                                totalCost += adjCost;
+                                catCost += adjCost;
                             }
-
-                            catItems.push({ svc, qty, cost });
-                            totalCost += cost;
-                            catCost += cost;
-                            remaining -= qty;
-                            if (remaining <= 0) break;
+                            budgetExhausted = true;
+                            break;
                         }
-                        if (remaining <= 0) break;
+
+                        catItems.push({ svc, qty, cost });
+                        totalCost += cost;
+                        catCost += cost;
                     }
                 }
 
