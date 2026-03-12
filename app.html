@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.6.2</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.6.3</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2975,26 +2975,20 @@
             let totalCost = 0;
             let html = '';
 
-            // Pre-calculate budget allocation per category (proportional)
-            const catBudgets = {};
-            if (budget !== Infinity) {
-                let totalEstCost = 0;
-                const estCosts = {};
-                for (const [cat, wanted] of Object.entries(catInputs)) {
-                    if (wanted <= 0) continue;
-                    const catSvcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
-                    if (catSvcs.length === 0) { estCosts[cat] = 0; continue; }
-                    const cheapest = Math.min(...catSvcs.map(s => s.rate));
-                    estCosts[cat] = (wanted / 1000) * cheapest;
-                    totalEstCost += estCosts[cat];
-                }
-                for (const [cat, est] of Object.entries(estCosts)) {
-                    catBudgets[cat] = totalEstCost > 0 ? (est / totalEstCost) * budget : budget;
-                }
-            }
+            // Sort categories: process cheapest (by estimated cost) first to maximize quantity
+            const catEntries = Object.entries(catInputs).filter(([, v]) => v > 0);
+            catEntries.sort((a, b) => {
+                const getCheapest = (cat) => {
+                    const svcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
+                    if (svcs.length === 0) return 99999;
+                    return Math.min(...svcs.map(s => s.rate));
+                };
+                const costA = (a[1] / 1000) * getCheapest(a[0]);
+                const costB = (b[1] / 1000) * getCheapest(b[0]);
+                return costA - costB;
+            });
 
-            for (const [cat, wanted] of Object.entries(catInputs)) {
-                if (wanted <= 0) continue;
+            for (const [cat, wanted] of catEntries) {
 
                 // Find services: rate > 0, max >= 100, smart sort
                 const catServices = available
@@ -3030,7 +3024,6 @@
                 let remaining = wanted;
                 let catCost = 0;
                 const catItems = [];
-                const myCatBudget = catBudgets[cat] || Infinity;
                 let budgetExhausted = false;
                 const perCode = parseInt(document.getElementById('spPc' + cat).value) || 1000;
 
@@ -3062,7 +3055,7 @@
                             if (qty < minO) qty = minO;
                             if (qty > maxO) qty = maxO;
                             const cost = (qty / 1000) * svc.rate;
-                            if (catCost + cost > myCatBudget) { budgetExhausted = true; continue; }
+                            if (budget !== Infinity && totalCost + cost > budget) { budgetExhausted = true; continue; }
                             catItems.push({ svc, qty, cost });
                             totalCost += cost;
                             catCost += cost;
@@ -3083,8 +3076,8 @@
                         if (qty > maxO) qty = maxO;
                         const cost = (qty / 1000) * svc.rate;
 
-                        if (catCost + cost > myCatBudget) {
-                            const maxAfford = ((myCatBudget - catCost) / svc.rate) * 1000;
+                        if (budget !== Infinity && totalCost + cost > budget) {
+                            const maxAfford = ((budget - totalCost) / svc.rate) * 1000;
                             if (maxAfford >= minO) {
                                 qty = Math.min(Math.floor(maxAfford), maxO);
                                 const adjCost = (qty / 1000) * svc.rate;
@@ -3106,7 +3099,7 @@
 
                 if (catItems.length === 0) {
                     if (budgetExhausted) {
-                        html += `<div style="padding:4px 0;font-size:12px;color:var(--orange);">⚠️ ${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} — งบไม่พอ (budget ฿${myCatBudget.toFixed(0)} สำหรับหมวดนี้)</div>`;
+                        html += `<div style="padding:4px 0;font-size:12px;color:var(--orange);">⚠️ ${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} — งบไม่พอ (เหลือ ฿${(budget - totalCost).toFixed(2)})</div>`;
                     } else {
                         html += `<div style="padding:4px 0;font-size:12px;color:var(--orange);">⚠️ ${catIcons[cat]} ${cat}: ${wanted.toLocaleString()} — ไม่เจอ service ที่จัดส่งได้ (rate=0 หรือ max น้อยเกินไป)</div>`;
                     }
