@@ -2042,12 +2042,12 @@
 
         function getCategoryBreakdown() {
             const cats = {
-                '👁️ Views': ['view', 'วิว', 'ยอดวิว'],
-                '❤️ Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
-                '👥 Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม'],
-                '💬 Comments': ['comment', 'คอมเม้น', 'คอมเมนต์'],
-                '🔁 Shares': ['share', 'แชร์'],
-                '💾 Saves': ['save', 'บันทึก'],
+                '👁️ Views': ['view', 'views', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
+                '❤️ Likes': ['like', 'likes', 'ไลค์', 'ไลก์'],
+                '👥 Followers': ['follow', 'follower', 'followers', 'ผู้ติดตาม', 'ติดตาม'],
+                '💬 Comments': ['comment', 'comments', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
+                '🔁 Shares': ['share', 'shares', 'แชร์', 'แชร์วิ'],
+                '💾 Saves': ['save', 'saves', 'เซฟ', 'บันทึก', 'favourite', 'favorites'],
                 '🔴 Live': ['live', 'ไลฟ์', 'สด', 'stream']
             };
             const totals = {};
@@ -2918,7 +2918,7 @@
             if (providers.length === 0) { alert('เลือกเว็บอย่างน้อย 1 เว็บ'); return; }
 
             const catKeywords = {
-                'Likes': ['like', 'likes', 'ไลค์', 'ไลก์', 'ถูกใจ', 'หัวใจ'],
+                'Likes': ['like', 'likes', 'ไลค์', 'ไลก์'],
                 'Views': ['view', 'views', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
                 'Shares': ['share', 'shares', 'แชร์', 'แชร์วิ'],
                 'Saves': ['save', 'saves', 'เซฟ', 'บันทึก', 'favourite', 'favorites'],
