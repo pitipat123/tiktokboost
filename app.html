@@ -3055,11 +3055,20 @@
                         }
                     });
                 } else {
-                    // CHEAPEST MODE: cycle through services, each gets perCode qty, repeat until filled
+                    // CHEAPEST MODE: pick cheapest service per provider, cycle until filled
+                    const byProv = {};
+                    catServices.forEach(s => {
+                        if (!byProv[s.provider] || s.rate < byProv[s.provider].rate) {
+                            byProv[s.provider] = s;
+                        }
+                    });
+                    const cheapestPerProv = Object.values(byProv).sort((a, b) => a.rate - b.rate);
+                    if (cheapestPerProv.length === 0) { continue; }
+
                     let rem = wanted;
                     let svcIdx = 0;
-                    while (rem > 0 && catServices.length > 0) {
-                        const svc = catServices[svcIdx % catServices.length];
+                    while (rem > 0) {
+                        const svc = cheapestPerProv[svcIdx % cheapestPerProv.length];
                         const maxO = svc.max || 1000000;
                         const minO = svc.min || 1;
                         let qty = Math.min(rem, perCode, maxO);
@@ -3114,6 +3123,77 @@
                     });
                 });
                 html += '</div>';
+            }
+
+            // BONUS ROUND: upgrade quality — use remaining budget on higher-tier services (Likes priority)
+            if (budget !== Infinity && totalCost < budget - 0.01 && smartPresetResult.length > 0) {
+                let remaining = budget - totalCost;
+                const bonusCats = ['Likes', 'Views', 'Shares', 'Saves'];
+                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : 'mlk';
+                let bonusHtml = '';
+                let bonusCount = 0;
+
+                for (const cat of bonusCats) {
+                    if (remaining < 0.01) break;
+                    // Get ALL services sorted cheap→expensive (skip cheapest-per-provider already used)
+                    const catSvcs = available
+                        .filter(s => classifyService(s) === cat && s.rate > 0 && (s.max || 1) >= 100)
+                        .sort((a, b) => a.rate - b.rate);
+                    if (catSvcs.length === 0) continue;
+
+                    const perCode = parseInt(document.getElementById('spPc' + cat)?.value) || 1000;
+                    let svcIdx = 0;
+                    let catBonusQty = 0;
+                    let catBonusCost = 0;
+                    const bonusItems = [];
+
+                    while (remaining > 0.01 && svcIdx < catSvcs.length) {
+                        const svc = catSvcs[svcIdx];
+                        const maxO = svc.max || 1000000;
+                        const minO = svc.min || 1;
+                        let qty = Math.min(perCode, maxO);
+                        let cost = (qty / 1000) * svc.rate;
+
+                        if (cost > remaining) {
+                            qty = Math.floor((remaining / svc.rate) * 1000);
+                            if (qty < minO) { svcIdx++; continue; }
+                            qty = Math.min(qty, maxO);
+                            cost = (qty / 1000) * svc.rate;
+                        }
+                        if (qty < minO) { svcIdx++; continue; }
+
+                        bonusItems.push({ svc, qty, cost });
+                        remaining -= cost;
+                        totalCost += cost;
+                        catBonusQty += qty;
+                        catBonusCost += cost;
+                        svcIdx++;
+                        bonusCount++;
+                    }
+
+                    if (bonusItems.length > 0) {
+                        bonusHtml += `<div style="padding:4px 0;border-bottom:1px solid var(--border);">
+                            <div style="font-size:12px;font-weight:600;color:var(--cyan);">⬆️ ${catIcons[cat]} ${cat} อัพเกรด: +${catBonusQty.toLocaleString()} → ฿${catBonusCost.toFixed(2)}</div>`;
+                        bonusItems.forEach(item => {
+                            bonusHtml += `<div style="font-size:11px;color:var(--text-dim);padding-left:16px;">
+                                <span class="provider-dot ${dotCls(item.svc.provider)}"></span>
+                                #${item.svc.id} ${item.svc.provider} — ${item.qty.toLocaleString()} pcs — ฿${item.cost.toFixed(2)}
+                            </div>`;
+                            smartPresetResult.push({
+                                provider: item.svc.provider,
+                                id: String(item.svc.id),
+                                name: item.svc.name,
+                                rate: item.svc.rate,
+                                qty: item.qty
+                            });
+                        });
+                        bonusHtml += '</div>';
+                    }
+                }
+
+                if (bonusCount > 0) {
+                    html += `<div style="font-size:11px;color:var(--cyan);margin-top:6px;margin-bottom:2px;">⬆️ งบเหลือ → อัพเกรดคุณภาพ:</div>` + bonusHtml;
+                }
             }
 
             if (smartPresetResult.length === 0) {
