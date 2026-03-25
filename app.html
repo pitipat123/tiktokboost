@@ -1113,7 +1113,7 @@
                             <option value="Comments">Comments</option>
                             <option value="Shares">Shares</option>
                             <option value="Saves">Saves</option>
-                            <option value="Live">Live</option>
+
                             <option value="Story">Story</option>
                             <option value="Other">Other</option>
                         </select>
@@ -1891,30 +1891,34 @@
             const search = document.getElementById('searchInput').value.toLowerCase();
 
             const catKeywords = {
-                'Likes': ['like', 'ไลค์', 'ไลก์', 'ถูกใจ'],
+                'Likes': ['like', 'ไลค์', 'ไลก์'],
                 'Views': ['view', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
                 'Followers': ['follow', 'ผู้ติดตาม', 'ติดตาม'],
                 'Comments': ['comment', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
                 'Shares': ['share', 'แชร์'],
-                'Saves': ['save', 'บันทึก'],
-                'Live': ['live', 'ไลฟ์', 'สด', 'stream'],
+                'Saves': ['save', 'บันทึก', 'เซฟ', 'favourite'],
                 'Story': ['story', 'สตอรี่']
             };
 
+            // Keywords to hide from service list
+            const hideKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม'];
+
             let filtered = allServices.filter(s => {
                 if (prov !== 'all' && s.provider !== prov) return false;
+                // Hide livestream services
+                const nameLow = (s.name || '').toLowerCase();
+                const catLow = (s.category || '').toLowerCase();
+                if (hideKeywords.some(kw => nameLow.includes(kw) || catLow.includes(kw))) return false;
                 if (cat !== 'all') {
                     const keywords = catKeywords[cat];
                     if (keywords) {
-                        const nameLow = (s.name || '').toLowerCase();
-                        const catLow = (s.category || '').toLowerCase();
                         const match = keywords.some(kw => nameLow.includes(kw) || catLow.includes(kw));
                         if (!match) return false;
                     } else {
                         return false;
                     }
                 }
-                if (search && !s.name.toLowerCase().includes(search) && !String(s.id).includes(search)) return false;
+                if (search && !nameLow.includes(search) && !String(s.id).includes(search)) return false;
                 return true;
             });
 
@@ -2952,8 +2956,13 @@
                 return null;
             }
 
-            // Filter available services from selected providers
-            const available = allServices.filter(s => providers.includes(s.provider));
+            // Filter available services from selected providers, exclude livestream/pump
+            const available = allServices.filter(s => {
+                if (!providers.includes(s.provider)) return false;
+                const n = (s.name || '').toLowerCase();
+                const c = (s.category || '').toLowerCase();
+                return !excludeKeywords.some(kw => n.includes(kw) || c.includes(kw));
+            });
 
             // Collect service IDs already used in existing presets
             const usedServiceKeys = new Set();
@@ -3067,24 +3076,21 @@
                         }
                     });
                 } else {
-                    // CHEAPEST MODE: pick multiple codes sorted by cheapest, each gets perCode qty
-                    const numCodes = Math.min(catServices.length, Math.max(1, Math.ceil(wanted / perCode)));
-                    const qtyPerSlot = Math.floor(wanted / numCodes);
-                    let slotLeftover = wanted - (qtyPerSlot * numCodes);
-
-                    for (let i = 0; i < numCodes; i++) {
-                        const svc = catServices[i % catServices.length];
-                        let qty = qtyPerSlot + (i === 0 ? slotLeftover : 0);
+                    // CHEAPEST MODE: cycle through services, each gets perCode qty, repeat until filled
+                    let rem = wanted;
+                    let svcIdx = 0;
+                    while (rem > 0 && catServices.length > 0) {
+                        const svc = catServices[svcIdx % catServices.length];
                         const maxO = svc.max || 1000000;
                         const minO = svc.min || 1;
+                        let qty = Math.min(rem, perCode, maxO);
                         if (qty < minO) qty = minO;
-                        if (qty > maxO) qty = maxO;
                         const cost = (qty / 1000) * svc.rate;
 
                         if (budget !== Infinity && totalCost + cost > budget) {
                             const maxAfford = ((budget - totalCost) / svc.rate) * 1000;
                             if (maxAfford >= minO) {
-                                qty = Math.min(Math.floor(maxAfford), maxO);
+                                qty = Math.min(Math.floor(maxAfford), maxO, rem);
                                 const adjCost = (qty / 1000) * svc.rate;
                                 catItems.push({ svc, qty, cost: adjCost });
                                 totalCost += adjCost;
@@ -3097,6 +3103,8 @@
                         catItems.push({ svc, qty, cost });
                         totalCost += cost;
                         catCost += cost;
+                        rem -= qty;
+                        svcIdx++;
                     }
                 }
 
