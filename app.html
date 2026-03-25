@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.7.2</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.7.3</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2984,8 +2984,29 @@
             const catEntries = priorityOrder
                 .filter(cat => catInputs[cat] && catInputs[cat] > 0)
                 .map(cat => [cat, catInputs[cat]]);
+            // Reserve budget for Views/Shares/Saves, give remaining to Likes
+            let reservedBudget = {};
+            if (budget !== Infinity && catEntries.length > 1) {
+                let reserveTotal = 0;
+                for (const [cat, qty] of catEntries) {
+                    if (cat === 'Likes') continue;
+                    const svcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
+                    const cheapestRate = svcs.length > 0 ? Math.min(...svcs.map(s => s.rate)) : 999;
+                    const estCost = (qty / 1000) * cheapestRate;
+                    reservedBudget[cat] = estCost;
+                    reserveTotal += estCost;
+                }
+                // Likes gets: total budget minus reserved
+                const likesAvail = budget - reserveTotal;
+                reservedBudget['Likes'] = likesAvail > 0 ? likesAvail : budget * 0.7;
+                html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">📊 จัดสรรงบ: ❤️ Likes ฿${reservedBudget['Likes'].toFixed(0)} | อื่นๆ ฿${reserveTotal.toFixed(0)}</div>`;
+            }
 
             for (const [cat, wanted] of catEntries) {
+                // Per-category budget limit
+                const catBudgetLimit = (budget !== Infinity && reservedBudget[cat]) 
+                    ? totalCost + reservedBudget[cat] 
+                    : budget;
 
                 // Find services: rate > 0, max >= 100, smart sort
                 const catServices = available
@@ -3048,14 +3069,14 @@
                             if (qty < minO) qty = minO;
                             if (qty > maxO) qty = maxO;
                             const cost = (qty / 1000) * svc.rate;
-                            if (budget !== Infinity && totalCost + cost > budget) { budgetExhausted = true; continue; }
+                            if (totalCost + cost > catBudgetLimit) { budgetExhausted = true; continue; }
                             catItems.push({ svc, qty, cost });
                             totalCost += cost;
                             catCost += cost;
                         }
                     });
                 } else {
-                    // CHEAPEST MODE: pick cheapest service per provider, cycle until filled
+                    // CHEAPEST MODE: cheapest per provider, cycle until filled or budget cap
                     const byProv = {};
                     catServices.forEach(s => {
                         if (!byProv[s.provider] || s.rate < byProv[s.provider].rate) {
@@ -3075,8 +3096,8 @@
                         if (qty < minO) qty = minO;
                         const cost = (qty / 1000) * svc.rate;
 
-                        if (budget !== Infinity && totalCost + cost > budget) {
-                            const maxAfford = ((budget - totalCost) / svc.rate) * 1000;
+                        if (totalCost + cost > catBudgetLimit) {
+                            const maxAfford = ((catBudgetLimit - totalCost) / svc.rate) * 1000;
                             if (maxAfford >= minO) {
                                 qty = Math.min(Math.floor(maxAfford), maxO, rem);
                                 const adjCost = (qty / 1000) * svc.rate;
