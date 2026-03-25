@@ -2937,8 +2937,8 @@
             const budget = parseFloat(document.getElementById('spBudget').value) || Infinity;
             const spreadMode = document.getElementById('spSpread').checked;
 
-            // Exclude live/stream services entirely
-            const excludeKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'เคาะใจ', 'สด', 'ถูกใจ live', 'like stream', 'likestream'];
+            // Exclude live/stream/pump services entirely
+            const excludeKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'กดถูกใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'ปั้มfollow'];
 
             // Classify services by category
             function classifyService(s) {
