@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.6.7</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.6.8</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1901,7 +1901,7 @@
             };
 
             // Keywords to hide from service list
-            const hideKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม'];
+            const hideKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'โบนัส', 'bonus', 'ปั้มใจ', 'ปั้ม', 'combo', 'แถม'];
 
             let filtered = allServices.filter(s => {
                 if (prov !== 'all' && s.provider !== prov) return false;
@@ -2942,7 +2942,7 @@
             const spreadMode = document.getElementById('spSpread').checked;
 
             // Exclude live/stream/pump services entirely
-            const excludeKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'กดถูกใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'ปั้มfollow'];
+            const excludeKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'กดถูกใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'ปั้มfollow', 'โบนัส', 'bonus', 'ปั้มใจ', 'ปั้ม', 'combo', 'แถม'];
 
             // Classify services by category
             function classifyService(s) {
