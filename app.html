@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.6.8</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.7.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1589,14 +1589,6 @@
                 <span style="font-size:12px;">💾 Saves</span>
                 <input type="number" id="spSaves" placeholder="2000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
                 <input type="number" id="spPcSaves" value="100" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
-
-                <span style="font-size:12px;">💬 Comments</span>
-                <input type="number" id="spComments" placeholder="500" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                <input type="number" id="spPcComments" value="100" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
-
-                <span style="font-size:12px;">👥 Followers</span>
-                <input type="number" id="spFollowers" placeholder="5000" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;">
-                <input type="number" id="spPcFollowers" value="500" style="padding:5px;background:var(--bg-dark);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:11px;text-align:center;">
             </div>
 
             <div style="margin-bottom:10px;">
@@ -1827,7 +1819,7 @@
                         rate: parseFloat(s.rate) || 0,
                         min: parseInt(s.min) || 1,
                         max: parseInt(s.max) || 1,
-                        time: s.average_time || 'N/A',
+                        time: s.average_time || s.avg_time || s.time || 'N/A',
                         usage: 'N/A'
                     }));
                 } else {
@@ -2989,18 +2981,11 @@
             let totalCost = 0;
             let html = '';
 
-            // Sort categories: process cheapest (by estimated cost) first to maximize quantity
-            const catEntries = Object.entries(catInputs).filter(([, v]) => v > 0);
-            catEntries.sort((a, b) => {
-                const getCheapest = (cat) => {
-                    const svcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
-                    if (svcs.length === 0) return 99999;
-                    return Math.min(...svcs.map(s => s.rate));
-                };
-                const costA = (a[1] / 1000) * getCheapest(a[0]);
-                const costB = (b[1] / 1000) * getCheapest(b[0]);
-                return costA - costB;
-            });
+            // Priority order: Likes (most important, fill first) → Views → Shares → Saves
+            const priorityOrder = ['Likes', 'Views', 'Shares', 'Saves'];
+            const catEntries = priorityOrder
+                .filter(cat => catInputs[cat] && catInputs[cat] > 0)
+                .map(cat => [cat, catInputs[cat]]);
 
             for (const [cat, wanted] of catEntries) {
 
