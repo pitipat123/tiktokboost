@@ -234,17 +234,42 @@ function jsonBlobRequest(method, blobId, data = null) {
             let body = '';
             res.on('data', chunk => body += chunk);
             res.on('end', () => {
-                if (method === 'POST' && res.headers.location) {
-                    const id = res.headers.location.split('/').pop();
-                    resolve({ success: true, syncCode: id });
-                } else {
+                console.log(`[Sync] ${method} ${reqPath} → ${res.statusCode} (${body.length} bytes)`);
+
+                // POST: create new blob
+                if (method === 'POST') {
+                    if (res.statusCode === 201 && res.headers.location) {
+                        const id = res.headers.location.split('/').pop();
+                        resolve({ success: true, syncCode: id });
+                    } else {
+                        resolve({ error: `Upload failed (HTTP ${res.statusCode})` });
+                    }
+                    return;
+                }
+
+                // PUT: update existing blob
+                if (method === 'PUT') {
+                    if (res.statusCode === 200) {
+                        resolve({ success: true });
+                    } else {
+                        resolve({ error: `Update failed (HTTP ${res.statusCode})` });
+                    }
+                    return;
+                }
+
+                // GET: download blob
+                if (res.statusCode === 200) {
                     try { resolve(JSON.parse(body)); }
-                    catch { resolve({ error: 'Invalid response' }); }
+                    catch { resolve({ error: 'Invalid response data' }); }
+                } else if (res.statusCode === 404) {
+                    resolve({ error: 'Sync code not found — อาจหมดอายุหรือพิมพ์ผิด' });
+                } else {
+                    resolve({ error: `Download failed (HTTP ${res.statusCode})` });
                 }
             });
         });
         req.on('error', e => reject(e));
-        req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout')); });
+        req.setTimeout(15000, () => { req.destroy(); reject(new Error('Timeout — ลองใหม่อีกครั้ง')); });
         if (postData) req.write(postData);
         req.end();
     });
@@ -254,16 +279,26 @@ function jsonBlobRequest(method, blobId, data = null) {
 ipcMain.handle('sync-upload-presets', async (event, presets) => {
     try {
         let syncCode = getStore().get('sync_code', null);
+
+        // Try updating existing blob
         if (syncCode) {
-            await jsonBlobRequest('PUT', syncCode, presets);
-            return { success: true, syncCode };
+            const putResult = await jsonBlobRequest('PUT', syncCode, presets);
+            if (putResult.success) {
+                console.log(`[Sync] Updated existing blob: ${syncCode}`);
+                return { success: true, syncCode };
+            }
+            // Old blob expired/deleted, create new one
+            console.log(`[Sync] PUT failed (${putResult.error}), creating new blob...`);
         }
+
+        // Create new blob
         const result = await jsonBlobRequest('POST', null, presets);
-        if (result.syncCode) {
+        if (result.success && result.syncCode) {
             getStore().set('sync_code', result.syncCode);
+            console.log(`[Sync] Created new blob: ${result.syncCode}`);
             return { success: true, syncCode: result.syncCode };
         }
-        return { error: 'Failed to upload' };
+        return { error: result.error || 'Failed to upload' };
     } catch (e) {
         return { error: e.message };
     }
