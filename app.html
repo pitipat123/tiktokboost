@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.7.3</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.7.4</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1811,6 +1811,11 @@
                             || name.includes('tt ') || cat.includes('tt -');
                     });
                     log(`📦 ${provider}: Total ${data.length} services, ${tiktokOnly.length} TikTok`, 'info');
+                    if (tiktokOnly.length > 0) {
+                        const sample = tiktokOnly[0];
+                        log(`🔍 ${provider} fields: ${Object.keys(sample).join(', ')}`, 'info');
+                        log(`🔍 ${provider} sample: service=${sample.service} | average_time=${sample.average_time} | avg_time=${sample.avg_time} | time=${sample.time} | estimated_delivery=${sample.estimated_delivery} | delivery=${sample.delivery}`, 'info');
+                    }
                     return tiktokOnly.map(s => ({
                         id: s.service,
                         provider,
@@ -1819,7 +1824,7 @@
                         rate: parseFloat(s.rate) || 0,
                         min: parseInt(s.min) || 1,
                         max: parseInt(s.max) || 1,
-                        time: s.average_time || s.avg_time || s.time || 'N/A',
+                        time: s.average_time || s.avg_time || s.estimated_delivery || s.delivery || s.speed || s.atime || (typeof s.time === 'string' && s.time) || 'N/A',
                         usage: 'N/A'
                     }));
                 } else {
@@ -1892,15 +1897,10 @@
                 'Story': ['story', 'สตอรี่']
             };
 
-            // Keywords to hide from service list
-            const hideKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'โบนัส', 'bonus', 'ปั้มใจ', 'ปั้ม', 'combo', 'แถม'];
-
             let filtered = allServices.filter(s => {
                 if (prov !== 'all' && s.provider !== prov) return false;
-                // Hide livestream services
                 const nameLow = (s.name || '').toLowerCase();
                 const catLow = (s.category || '').toLowerCase();
-                if (hideKeywords.some(kw => nameLow.includes(kw) || catLow.includes(kw))) return false;
                 if (cat !== 'all') {
                     const keywords = catKeywords[cat];
                     if (keywords) {
