@@ -1816,17 +1816,31 @@
                         log(`🔍 ${provider} fields: ${Object.keys(sample).join(', ')}`, 'info');
                         log(`🔍 ${provider} sample: service=${sample.service} | average_time=${sample.average_time} | avg_time=${sample.avg_time} | time=${sample.time} | estimated_delivery=${sample.estimated_delivery} | delivery=${sample.delivery}`, 'info');
                     }
-                    return tiktokOnly.map(s => ({
-                        id: s.service,
-                        provider,
-                        name: s.name,
-                        category: s.category || 'Other',
-                        rate: parseFloat(s.rate) || 0,
-                        min: parseInt(s.min) || 1,
-                        max: parseInt(s.max) || 1,
-                        time: s.average_time || s.avg_time || s.estimated_delivery || s.delivery || s.speed || s.atime || (typeof s.time === 'string' && s.time) || 'N/A',
-                        usage: 'N/A'
-                    }));
+                    return tiktokOnly.map(s => {
+                        // Parse delivery time from description (standard API has no time field)
+                        let time = s.average_time || s.avg_time || s.estimated_delivery || '';
+                        if (!time && s.description) {
+                            const desc = s.description;
+                            // Match patterns: "24 hours", "1-2 hours", "30 minutes", "ภายใน 24 ชม.", "Start: 0-1h"
+                            const timeMatch = desc.match(/(\d+[-–]\d+\s*(?:hours?|hrs?|minutes?|mins?|ชั่วโมง|ชม\.|นาที))/i)
+                                || desc.match(/((?:Start|Speed|Delivery|Time)[:\s]*[^\n,]{3,30})/i)
+                                || desc.match(/(ภายใน[^\n,]{3,20})/i)
+                                || desc.match(/(\d+\s*(?:hours?|hrs?|minutes?|mins?|ชั่วโมง|ชม\.|นาที))/i);
+                            if (timeMatch) time = timeMatch[1].trim();
+                        }
+                        return {
+                            id: s.service,
+                            provider,
+                            name: s.name,
+                            category: s.category || 'Other',
+                            rate: parseFloat(s.rate) || 0,
+                            min: parseInt(s.min) || 1,
+                            max: parseInt(s.max) || 1,
+                            time: time || 'N/A',
+                            desc: s.description || '',
+                            usage: 'N/A'
+                        };
+                    });
                 } else {
                     log(`⚠️ ${provider}: Response is not an array: ${JSON.stringify(data).substring(0, 200)}`, 'err');
                 }
