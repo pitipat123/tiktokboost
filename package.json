@@ -1,6 +1,6 @@
 {
     "name": "tiktokboost",
-    "version": "1.7.4",
+    "version": "1.7.5",
     "description": "TikTokBoost — SMM Panel Desktop App รวม 5 เว็บ SMM ในโปรแกรมเดียว",
     "main": "main.js",
     "scripts": {
