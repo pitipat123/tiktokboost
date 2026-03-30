@@ -1360,7 +1360,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.7.6</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.7.8</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -2928,14 +2928,12 @@
             if (providers.length === 0) { alert('เลือกเว็บอย่างน้อย 1 เว็บ'); return; }
 
             const catKeywords = {
-                'Likes': ['like', 'likes', 'ไลค์', 'ไลก์'],
-                'Views': ['view', 'views', 'วิว', 'ยอดวิว', 'เพิ่มวิว'],
-                'Shares': ['share', 'shares', 'แชร์', 'แชร์วิ'],
-                'Saves': ['save', 'saves', 'เซฟ', 'บันทึก', 'favourite', 'favorites'],
-                'Comments': ['comment', 'comments', 'คอมเม้น', 'คอมเม้นท์', 'คอมเมนต์'],
-                'Followers': ['follow', 'follower', 'followers', 'ผู้ติดตาม', 'ติดตาม']
+                'Likes': ['like', 'likes', 'ไลค์', 'ไลก์', 'ถูกใจวิดีโอ', 'ถูกใจวีดีโอ', 'ถูกใจ video', 'หัวใจวิดีโอ', 'กดใจวิดีโอ', 'heart'],
+                'Views': ['view', 'views', 'วิว', 'ยอดวิว', 'เพิ่มวิว', 'video view', 'วิวtiktok', 'วิววิดีโอ', 'วิววีดีโอ'],
+                'Saves': ['save', 'saves', 'เซฟ', 'บันทึก', 'favourite', 'favorites', 'bookmark', 'เซฟวิดีโอ', 'บันทึกวิดีโอ', 'บันทึกวีดีโอ'],
+                'Shares': ['share', 'shares', 'แชร์', 'แชร์วิดีโอ', 'แชร์วีดีโอ']
             };
-            const catIcons = { Likes: '❤️', Views: '👁️', Shares: '🔁', Saves: '💾', Comments: '💬', Followers: '👥' };
+            const catIcons = { Likes: '❤️', Views: '👁️', Saves: '💾', Shares: '🔁' };
             const catInputs = {
                 Likes: parseInt(document.getElementById('spLikes').value) || 0,
                 Views: parseInt(document.getElementById('spViews').value) || 0,
@@ -2945,27 +2943,28 @@
             const budget = parseFloat(document.getElementById('spBudget').value) || Infinity;
             const spreadMode = document.getElementById('spSpread').checked;
 
-            // Exclude live/stream/pump services entirely
-            const excludeKeywords = ['live', 'stream', 'สตรีม', 'ไลฟ์', 'ไลฟ', 'เคาะใจ', 'เคาะ', 'สด', 'ถูกใจ', 'หัวใจ', 'กดใจ', 'กดถูกใจ', 'ยิงใจ', 'likestream', 'ปั้มผู้ติดตาม', 'ปั้มติดตาม', 'ปั้มfollow', 'โบนัส', 'bonus', 'ปั้มใจ', 'ปั้ม', 'combo', 'แถม'];
+            // Exclude: livestream, followers, comments, combos — NOT regular video services
+            const excludeKeywords = ['เคาะใจ', 'เคาะ', 'ไลฟ์', 'ไลฟ', 'สตรีม', 'live stream', 'livestream', 'likestream', 'like stream', 'กดใจสด', 'ยิงใจ', 'follow', 'follower', 'ผู้ติดตาม', 'ติดตาม', 'comment', 'คอมเม้น', 'คอมเมนต์', 'โบนัส', 'bonus', 'combo', 'แถม'];
 
             // Classify services by category
             function classifyService(s) {
                 const nameLow = (s.name || '').toLowerCase();
                 const catLow = (s.category || '').toLowerCase();
-                // Skip live/stream services
-                if (excludeKeywords.some(kw => nameLow.includes(kw) || catLow.includes(kw))) return null;
+                const text = nameLow + ' ' + catLow;
+                // Skip livestream/follower/comment/combo services
+                if (excludeKeywords.some(kw => text.includes(kw))) return null;
+                // Skip if contains 'live' or 'stream' or 'สด' (livestream indicators)
+                if (/\b(live|stream|สด)\b/i.test(text)) return null;
                 for (const [cat, keywords] of Object.entries(catKeywords)) {
-                    if (keywords.some(kw => nameLow.includes(kw) || catLow.includes(kw))) return cat;
+                    if (keywords.some(kw => text.includes(kw))) return cat;
                 }
                 return null;
             }
 
-            // Filter available services from selected providers, exclude livestream/pump
+            // Filter available services from selected providers
             const available = allServices.filter(s => {
                 if (!providers.includes(s.provider)) return false;
-                const n = (s.name || '').toLowerCase();
-                const c = (s.category || '').toLowerCase();
-                return !excludeKeywords.some(kw => n.includes(kw) || c.includes(kw));
+                return classifyService(s) !== null || true; // keep all, classifyService filters later
             });
 
             // Collect service IDs already used in existing presets
@@ -2998,45 +2997,27 @@
             const catEntries = priorityOrder
                 .filter(cat => catInputs[cat] && catInputs[cat] > 0)
                 .map(cat => [cat, catInputs[cat]]);
-            // Reserve budget for Views/Shares/Saves, give remaining to Likes
-            let reservedBudget = {};
-            if (budget !== Infinity && catEntries.length > 1) {
-                let reserveTotal = 0;
-                for (const [cat, qty] of catEntries) {
-                    if (cat === 'Likes') continue;
-                    const svcs = available.filter(s => classifyService(s) === cat && s.rate > 0);
-                    const cheapestRate = svcs.length > 0 ? Math.min(...svcs.map(s => s.rate)) : 999;
-                    const estCost = (qty / 1000) * cheapestRate;
-                    reservedBudget[cat] = estCost;
-                    reserveTotal += estCost;
-                }
-                // Likes gets: total budget minus reserved
-                const likesAvail = budget - reserveTotal;
-                reservedBudget['Likes'] = likesAvail > 0 ? likesAvail : budget * 0.7;
-                html += `<div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">📊 จัดสรรงบ: ❤️ Likes ฿${reservedBudget['Likes'].toFixed(0)} | อื่นๆ ฿${reserveTotal.toFixed(0)}</div>`;
-            }
 
             for (const [cat, wanted] of catEntries) {
-                // Per-category budget limit
-                const catBudgetLimit = (budget !== Infinity && reservedBudget[cat]) 
-                    ? totalCost + reservedBudget[cat] 
-                    : budget;
+                // Use global budget — fill each category fully before moving to next
+                const catBudgetLimit = budget;
 
-                // Find services: rate > 0, max >= 100, smart sort
+                // Find services: rate > 0, max >= 100, sort by price+speed score
                 const catServices = available
-                    .filter(s => classifyService(s) === cat && (s.max || 1) >= 100 && s.rate > 0)
-                    .sort((a, b) => {
-                        // 1. Cheapest rate FIRST
-                        if (a.rate !== b.rate) return a.rate - b.rate;
-                        // 2. Prefer NOT used in other presets
-                        const aUsed = usedServiceKeys.has(`${a.provider}_${a.id}`) ? 1 : 0;
-                        const bUsed = usedServiceKeys.has(`${b.provider}_${b.id}`) ? 1 : 0;
-                        if (aUsed !== bUsed) return aUsed - bUsed;
-                        // 3. Prefer with delivery time data
-                        const aHasTime = a.time && a.time !== 'N/A' ? 0 : 1;
-                        const bHasTime = b.time && b.time !== 'N/A' ? 0 : 1;
-                        return aHasTime - bHasTime;
-                    });
+                    .filter(s => classifyService(s) === cat && (s.max || 1) >= 100 && s.rate > 0);
+                
+                // Calculate combined score: 70% price + 30% speed
+                const maxRate = Math.max(...catServices.map(s => s.rate), 1);
+                const maxTime = Math.max(...catServices.map(s => parseTimeToMinutes(s.time) || 9999), 1);
+                catServices.sort((a, b) => {
+                    const aRate = a.rate / maxRate; // 0~1 (lower = cheaper)
+                    const bRate = b.rate / maxRate;
+                    const aTime = (parseTimeToMinutes(a.time) || 9999) / maxTime; // 0~1 (lower = faster)
+                    const bTime = (parseTimeToMinutes(b.time) || 9999) / maxTime;
+                    const aScore = (aRate * 0.7) + (aTime * 0.3);
+                    const bScore = (bRate * 0.7) + (bTime * 0.3);
+                    return aScore - bScore;
+                });
 
                 // Fallback: if no services with max>=100, use any
                 if (catServices.length === 0) {
