@@ -1216,6 +1216,22 @@
 
                         <div class="clear-all" onclick="clearSelected()">✖ Clear All</div>
 
+                        <!-- Multi-Clip Boost -->
+                        <div style="padding:6px 12px;border-top:1px solid var(--border);margin-top:6px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                                <label style="font-size:12px;font-weight:600;color:var(--cyan);cursor:pointer;" onclick="toggleMultiClip()">🎬 Multi-Clip Boost <span id="mcToggle" style="font-size:10px;">▼</span></label>
+                                <span style="font-size:10px;color:var(--text-muted);" id="mcCount">0/10 clips</span>
+                            </div>
+                            <div id="multiClipSection" style="display:none;">
+                                <div id="multiClipList" style="max-height:300px;overflow-y:auto;margin-bottom:6px;"></div>
+                                <div style="display:flex;gap:4px;">
+                                    <button onclick="addClipRow()" style="flex:1;padding:5px;background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;">➕ เพิ่มคลิป</button>
+                                    <button onclick="clearAllClips()" style="padding:5px 10px;background:var(--border);color:var(--text);border:none;border-radius:4px;font-size:11px;cursor:pointer;">🗑️ ล้าง</button>
+                                </div>
+                                <button class="btn-boost" style="margin-top:8px;background:linear-gradient(135deg,var(--cyan),var(--accent));" onclick="boostMultiClip()">🎬 BOOST ALL CLIPS</button>
+                            </div>
+                        </div>
+
                         <button class="btn-boost" onclick="boostAllSelected()">⚡ BOOST ALL SELECTED</button>
 
                         <div style="padding:0 12px 2px;">
@@ -1360,7 +1376,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.7.9</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.8.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -3255,6 +3271,135 @@
             renderServices();
             log(`🤖 Smart Preset applied: ${smartPresetResult.length} services`, 'ok');
             closeModal('smartPresetModal');
+        }
+        // ===== MULTI-CLIP BOOST =====
+        let multiClipRows = [];
+
+        function toggleMultiClip() {
+            const sec = document.getElementById('multiClipSection');
+            const tog = document.getElementById('mcToggle');
+            if (sec.style.display === 'none') {
+                sec.style.display = 'block';
+                tog.textContent = '▲';
+                if (multiClipRows.length === 0) addClipRow();
+            } else {
+                sec.style.display = 'none';
+                tog.textContent = '▼';
+            }
+        }
+
+        function buildPresetOptions() {
+            const names = Object.keys(presets);
+            return '<option value="">-- เลือก Preset --</option>' + names.map(n => `<option value="${n}">${n}</option>`).join('');
+        }
+
+        function addClipRow() {
+            if (multiClipRows.length >= 10) { alert('สูงสุด 10 คลิป'); return; }
+            const idx = multiClipRows.length;
+            multiClipRows.push({ link: '', preset: '' });
+            renderClipRows();
+        }
+
+        function removeClipRow(idx) {
+            multiClipRows.splice(idx, 1);
+            renderClipRows();
+        }
+
+        function clearAllClips() {
+            multiClipRows = [];
+            renderClipRows();
+        }
+
+        function updateMcCount() {
+            document.getElementById('mcCount').textContent = `${multiClipRows.length}/10 clips`;
+        }
+
+        function renderClipRows() {
+            const list = document.getElementById('multiClipList');
+            list.innerHTML = multiClipRows.map((row, i) => `
+                <div style="display:flex;gap:4px;align-items:center;margin-bottom:4px;padding:4px;background:var(--bg-dark);border-radius:4px;border:1px solid var(--border);">
+                    <span style="font-size:10px;color:var(--cyan);min-width:20px;text-align:center;font-weight:700;">#${i + 1}</span>
+                    <input type="text" placeholder="https://tiktok.com/..." value="${row.link}" 
+                        onchange="multiClipRows[${i}].link=this.value"
+                        style="flex:1;padding:4px 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:3px;color:var(--text);font-size:11px;">
+                    <select onchange="multiClipRows[${i}].preset=this.value" 
+                        style="width:120px;padding:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:3px;color:var(--text);font-size:10px;">
+                        ${buildPresetOptions()}
+                    </select>
+                    <button onclick="removeClipRow(${i})" style="padding:3px 6px;background:var(--red);color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:10px;">✕</button>
+                </div>
+            `).join('');
+            // Restore selected preset values
+            const selects = list.querySelectorAll('select');
+            selects.forEach((sel, i) => { if (multiClipRows[i].preset) sel.value = multiClipRows[i].preset; });
+            updateMcCount();
+        }
+
+        async function boostMultiClip() {
+            // Read current values from inputs
+            const inputs = document.querySelectorAll('#multiClipList input[type="text"]');
+            const selects = document.querySelectorAll('#multiClipList select');
+            inputs.forEach((inp, i) => { multiClipRows[i].link = inp.value.trim(); });
+            selects.forEach((sel, i) => { multiClipRows[i].preset = sel.value; });
+
+            const validClips = multiClipRows.filter(r => r.link && r.preset);
+            if (validClips.length === 0) { alert('ใส่ลิงก์และเลือก Preset อย่างน้อย 1 คลิป'); return; }
+            if (!confirm(`ยืนยันส่ง ${validClips.length} คลิป?`)) return;
+
+            log(`🎬 Multi-Clip Boost: ${validClips.length} clips`, 'info');
+
+            for (let c = 0; c < validClips.length; c++) {
+                const clip = validClips[c];
+                const presetServices = presets[clip.preset];
+                if (!presetServices || presetServices.length === 0) {
+                    log(`❌ Clip #${c + 1}: Preset "${clip.preset}" ว่างเปล่า`, 'err');
+                    continue;
+                }
+
+                log(`🎬 Clip #${c + 1}: ${clip.link} → ${clip.preset} (${presetServices.length} services)`, 'info');
+
+                for (const svc of presetServices) {
+                    try {
+                        const params = { service: svc.id, link: clip.link, quantity: svc.qty };
+                        const result = await apiCall(svc.provider, 'add', params);
+                        if (result.order) {
+                            log(`✅ Clip #${c + 1} → ${svc.provider} #${result.order}: ${svc.name} × ${svc.qty}`, 'ok');
+                            orderHistory.push({
+                                orderId: result.order,
+                                provider: svc.provider,
+                                service: svc.name,
+                                serviceId: svc.id,
+                                link: clip.link,
+                                qty: svc.qty,
+                                cost: ((svc.qty / 1000) * svc.rate).toFixed(2),
+                                status: 'Pending',
+                                date: new Date().toISOString()
+                            });
+                            // Track delivery
+                            const record = createDeliveryRecord(result.order, svc.provider, svc.id, svc.name, Date.now());
+                            deliveryRecords.push(record);
+                        } else {
+                            log(`❌ Clip #${c + 1} → ${svc.provider}: ${JSON.stringify(result)}`, 'err');
+                        }
+                    } catch (e) {
+                        log(`❌ Clip #${c + 1} → ${svc.provider}: ${e.message}`, 'err');
+                    }
+                }
+
+                // Save after each clip
+                localStorage.setItem('tb_order_history', JSON.stringify(orderHistory));
+                localStorage.setItem('tb_delivery_records', JSON.stringify(deliveryRecords));
+
+                // Delay between clips
+                if (c < validClips.length - 1) {
+                    log(`⏳ รอ 2 วินาที...`, 'info');
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+            }
+
+            refreshHistory();
+            refreshBalance();
+            log(`🎬 Multi-Clip Boost เสร็จ! ${validClips.length} clips`, 'ok');
         }
     </script>
 </body>
