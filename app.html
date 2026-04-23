@@ -122,6 +122,12 @@
             color: #fb923c;
         }
 
+        .balance-badge.bee {
+            background: rgba(250, 204, 21, 0.1);
+            border-color: #facc15;
+            color: #facc15;
+        }
+
         .balance-bar-right {
             margin-left: auto;
             display: flex;
@@ -381,6 +387,10 @@
 
         .svc-table .provider-dot.mlk {
             background: #fb923c;
+        }
+
+        .svc-table .provider-dot.bee {
+            background: #facc15;
         }
 
         .svc-table td.time-col {
@@ -1069,6 +1079,7 @@
         <div class="balance-badge a4u" id="bal-a4u">Ads4U: <span id="bal-a4u-val">0.00</span> THB</div>
         <div class="balance-badge nlk" id="bal-nlk">NewLike: <span id="bal-nlk-val">0.00</span> THB</div>
         <div class="balance-badge mlk" id="bal-mlk">MeeLike: <span id="bal-mlk-val">0.00</span> THB</div>
+        <div class="balance-badge bee" id="bal-bee">BeeTH: <span id="bal-bee-val">0.00</span> THB</div>
         <div class="balance-bar-right">
             <button class="btn-topup" onclick="alert('Top Up — coming soon')">💰 Top Up</button>
             <button class="btn-icon" title="Dark/Light">🌙</button>
@@ -1103,6 +1114,7 @@
                             <option value="Ads4U">Ads4U</option>
                             <option value="NewLike">NewLike</option>
                             <option value="MeeLike">MeeLike</option>
+                            <option value="BeeTH">BeeTH</option>
                         </select>
                         <label>Category:</label>
                         <select id="filterCategory" onchange="filterServices()">
@@ -1256,6 +1268,7 @@
                     <option>Ads4U</option>
                     <option>NewLike</option>
                     <option>MeeLike</option>
+                    <option>BeeTH</option>
                 </select>
                 <button class="btn-action blue" onclick="refreshHistory()">📋 Refresh</button>
             </div>
@@ -1329,6 +1342,10 @@
                         <label>MeeLike:</label>
                         <input type="password" id="key-mlk" placeholder="Enter MeeLike API Key">
                     </div>
+                    <div class="api-row">
+                        <label>BeeTH:</label>
+                        <input type="password" id="key-bee" placeholder="Enter BeeTH API Key">
+                    </div>
                     <div class="api-btns">
                         <button class="btn-hide" onclick="toggleAllKeys()">🔐 Hide Keys</button>
                         <button class="btn-save-keys" onclick="saveAllKeys()">💾 Save API Keys</button>
@@ -1367,6 +1384,7 @@
                         <p>• Ads4U: <span style="color:var(--blue);">https://ads4u.co/api</span></p>
                         <p>• NewLike: <span style="color:var(--blue);">https://new-like.com/api</span></p>
                         <p>• MeeLike: <span style="color:var(--blue);">https://app.meelike-th.com/api</span></p>
+                        <p>• BeeTH: <span style="color:var(--blue);">https://bee-th.com/api</span></p>
                         <p style="margin-top:6px;"><strong>Note:</strong> Keys are stored locally in data/config.json
                         </p>
                     </div>
@@ -1376,7 +1394,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.8.0</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.8.1</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1455,6 +1473,12 @@
                             <span class="ds-bar-label" style="color:#fb923c;">● MeeLike</span>
                             <div class="ds-bar">
                                 <div class="ds-fill" id="ds-bar-mlk" style="width:0%;background:#fb923c;">—</div>
+                            </div>
+                        </div>
+                        <div class="ds-bar-row">
+                            <span class="ds-bar-label" style="color:#facc15;">● BeeTH</span>
+                            <div class="ds-bar">
+                                <div class="ds-fill" id="ds-bar-bee" style="width:0%;background:#facc15;">—</div>
                             </div>
                         </div>
                     </div>
@@ -1581,6 +1605,9 @@
                 <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
                         type="checkbox" class="sp-provider" value="MeeLike"> <span
                         class="provider-dot mlk"></span>MeeLike</label>
+                <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input
+                        type="checkbox" class="sp-provider" value="BeeTH"> <span
+                        class="provider-dot bee"></span>BeeTH</label>
             </div>
 
 
@@ -1701,6 +1728,7 @@
                         <option value="Ads4U">Ads4U</option>
                         <option value="NewLike">NewLike</option>
                         <option value="MeeLike">MeeLike</option>
+                        <option value="BeeTH">BeeTH</option>
                     </select>
                 </div>
                 <div style="flex:1;">
@@ -1745,7 +1773,8 @@
             KMM: 'https://kmm-th.com/api/v2',
             Ads4U: 'https://ads4u.co/api/v2',
             NewLike: 'https://new-like.com/api/v2',
-            MeeLike: 'https://api.meelike-th.com/api/v2'
+            MeeLike: 'https://api.meelike-th.com/api/v2',
+            BeeTH: 'https://bee-th.com/api/v2'
         };
 
         // ===== STATE =====
@@ -1772,7 +1801,7 @@
 
         // ===== API HELPERS =====
         function getKey(provider) {
-            const ids = { iPlusView: 'key-ipv', KMM: 'key-kmm', Ads4U: 'key-a4u', NewLike: 'key-nlk', MeeLike: 'key-mlk' };
+            const ids = { iPlusView: 'key-ipv', KMM: 'key-kmm', Ads4U: 'key-a4u', NewLike: 'key-nlk', MeeLike: 'key-mlk', BeeTH: 'key-bee' };
             return document.getElementById(ids[provider])?.value || localStorage.getItem(`tb_key_${provider}`) || '';
         }
 
@@ -1845,11 +1874,24 @@
                                 || desc.match(/(\d+\s*(?:hours?|hrs?|minutes?|mins?|ชั่วโมง|ชม\.|นาที))/i);
                             if (timeMatch) time = timeMatch[1].trim();
                         }
+                        // Classify category from name if API category is vague
+                        let category = s.category || '';
+                        const nLow = (s.name || '').toLowerCase();
+                        if (!category || category.toLowerCase() === 'other' || category.toLowerCase() === 'default') {
+                            if (/like|ไลค์|ไลก์|ถูกใจ|heart|หัวใจ/.test(nLow)) category = 'TikTok Likes';
+                            else if (/view|วิว/.test(nLow)) category = 'TikTok Views';
+                            else if (/share|แชร์/.test(nLow)) category = 'TikTok Shares';
+                            else if (/save|เซฟ|บันทึก|favourite|bookmark/.test(nLow)) category = 'TikTok Saves';
+                            else if (/follow|ผู้ติดตาม|ติดตาม/.test(nLow)) category = 'TikTok Followers';
+                            else if (/comment|คอมเม้น|คอมเมนต์/.test(nLow)) category = 'TikTok Comments';
+                            else if (/live|ไลฟ์|สตรีม|stream|เคาะ/.test(nLow)) category = 'TikTok Live';
+                            else category = 'TikTok - Uncategorized';
+                        }
                         return {
                             id: s.service,
                             provider,
                             name: s.name,
-                            category: s.category || 'Other',
+                            category,
                             rate: parseFloat(s.rate) || 0,
                             min: parseInt(s.min) || 1,
                             max: parseInt(s.max) || 1,
@@ -1873,7 +1915,7 @@
             setStatus('Fetching services...');
             allServices = [];
 
-            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'];
+            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike', 'BeeTH'];
             for (const p of providers) {
                 if (!getKey(p)) {
                     log(`⚠️ ${p}: No API key set, skipping`, 'err');
@@ -2019,7 +2061,7 @@
             }
 
             body.innerHTML = filtered.map((s, i) => {
-                const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : 'mlk';
+                const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : s.provider === 'MeeLike' ? 'mlk' : 'bee';
                 const isSelected = selectedServices.some(sel => sel.id === s.id && sel.provider === s.provider);
                 return `<tr>
           <td><input type="checkbox" class="svc-check" data-idx="${i}" ${isSelected ? 'checked' : ''}></td>
@@ -2279,7 +2321,7 @@
 
         // ===== BALANCE CHECK =====
         async function checkAllBalances() {
-            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'];
+            const providers = ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike', 'BeeTH'];
             const balDisplay = document.getElementById('balanceDisplay');
             let html = '';
 
@@ -2292,7 +2334,7 @@
                     html += `<p>• ${p}: <strong style="color:var(--green);">${balNum.toLocaleString()} THB</strong></p>`;
 
                     // Update top bar
-                    const ids = { iPlusView: 'bal-ipv-val', KMM: 'bal-kmm-val', Ads4U: 'bal-a4u-val', NewLike: 'bal-nlk-val', MeeLike: 'bal-mlk-val' };
+                    const ids = { iPlusView: 'bal-ipv-val', KMM: 'bal-kmm-val', Ads4U: 'bal-a4u-val', NewLike: 'bal-nlk-val', MeeLike: 'bal-mlk-val', BeeTH: 'bal-bee-val' };
                     document.getElementById(ids[p]).textContent = balNum.toLocaleString();
                 } catch (e) {
                     html += `<p>• ${p}: <span style="color:var(--red);">Error: ${e.message}</span></p>`;
@@ -2367,7 +2409,7 @@
 
                     if (deadServices.length > 0) {
                         const listHtml = deadServices.map(s => {
-                            const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : 'mlk';
+                            const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : s.provider === 'MeeLike' ? 'mlk' : 'bee';
                             return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">
                                 <span>❌ <span class="provider-dot ${dotCls}"></span> <strong>#${s.service}</strong></span>
                                 <span style="color:var(--text-dim);">${(s.name || 'Unknown').substring(0, 40)}</span>
@@ -2511,7 +2553,8 @@
             KMM: 'https://kmm-th.com/addfunds',
             Ads4U: 'https://ads4u.co/addfunds',
             NewLike: 'https://new-like.com/addfunds',
-            MeeLike: 'https://app.meelike-th.com/addfunds'
+            MeeLike: 'https://app.meelike-th.com/addfunds',
+            BeeTH: 'https://bee-th.com/addfunds'
         };
         let topupHistory = JSON.parse(localStorage.getItem('tb_topup_history') || '[]');
 
@@ -2574,7 +2617,7 @@
 
             html += topupHistory.slice(0, 20).map(r => {
                 const date = new Date(r.date).toLocaleString('th-TH');
-                const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : 'mlk';
+                const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : r.provider === 'MeeLike' ? 'mlk' : 'bee';
                 return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;">
                     <span><span class="provider-dot ${dotCls}"></span> ${r.provider}</span>
                     <span style="color:var(--green);font-weight:600;">฿${r.amount.toLocaleString()}</span>
@@ -2659,6 +2702,7 @@
             localStorage.setItem('tb_key_Ads4U', document.getElementById('key-a4u').value);
             localStorage.setItem('tb_key_NewLike', document.getElementById('key-nlk').value);
             localStorage.setItem('tb_key_MeeLike', document.getElementById('key-mlk').value);
+            localStorage.setItem('tb_key_BeeTH', document.getElementById('key-bee').value);
             log('💾 API Keys saved', 'ok');
             // Auto-fetch balances after saving
             checkAllBalances();
@@ -2669,7 +2713,7 @@
         let keysVisible = true;
         function toggleAllKeys() {
             keysVisible = !keysVisible;
-            ['key-ipv', 'key-kmm', 'key-a4u', 'key-nlk', 'key-mlk'].forEach(id => {
+            ['key-ipv', 'key-kmm', 'key-a4u', 'key-nlk', 'key-mlk', 'key-bee'].forEach(id => {
                 document.getElementById(id).type = keysVisible ? 'text' : 'password';
             });
         }
@@ -2775,7 +2819,7 @@
 
             // Per-provider stats
             const byProvider = {};
-            ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike'].forEach(p => {
+            ['iPlusView', 'KMM', 'Ads4U', 'NewLike', 'MeeLike', 'BeeTH'].forEach(p => {
                 const pRecs = records.filter(r => r.provider === p);
                 if (pRecs.length > 0) {
                     const avg = pRecs.reduce((s, r) => s + r.duration, 0) / pRecs.length;
@@ -2787,7 +2831,7 @@
 
             // Speed bars
             const maxAvg = Math.max(...Object.values(byProvider).map(v => v.avg), 1);
-            const barIds = { iPlusView: 'ds-bar-ipv', KMM: 'ds-bar-kmm', Ads4U: 'ds-bar-a4u', NewLike: 'ds-bar-nlk', MeeLike: 'ds-bar-mlk' };
+            const barIds = { iPlusView: 'ds-bar-ipv', KMM: 'ds-bar-kmm', Ads4U: 'ds-bar-a4u', NewLike: 'ds-bar-nlk', MeeLike: 'ds-bar-mlk', BeeTH: 'ds-bar-bee' };
             Object.entries(barIds).forEach(([prov, barId]) => {
                 const el = document.getElementById(barId);
                 if (byProvider[prov]) {
@@ -2808,7 +2852,7 @@
                     const speedClass = p === fastest[0] ? 'ds-fastest' : d.avg > maxAvg * 0.8 ? 'ds-slow' : 'ds-medium';
                     const stars = p === fastest[0] ? '⚡ Fastest' : d.avg > maxAvg * 0.8 ? '🐢 Slow' : '👍 Good';
                     return `<tr>
-                        <td><span class="provider-dot ${p === 'iPlusView' ? 'ipv' : p === 'KMM' ? 'kmm' : p === 'Ads4U' ? 'a4u' : p === 'NewLike' ? 'nlk' : 'mlk'}"></span> ${p}</td>
+                        <td><span class="provider-dot ${p === 'iPlusView' ? 'ipv' : p === 'KMM' ? 'kmm' : p === 'Ads4U' ? 'a4u' : p === 'NewLike' ? 'nlk' : p === 'MeeLike' ? 'mlk' : 'bee'}"></span> ${p}</td>
                         <td>${d.count}</td>
                         <td class="${speedClass}">${formatDuration(d.avg)}</td>
                         <td style="color:var(--green);">${formatDuration(d.fast)}</td>
@@ -2851,7 +2895,7 @@
                 catBody.innerHTML = Object.entries(byCat).map(([cat, d]) => {
                     const speedClass = d.avg <= catMaxAvg * 0.5 ? 'ds-fastest' : d.avg > catMaxAvg * 0.8 ? 'ds-slow' : 'ds-medium';
                     const stars = d.avg <= catMaxAvg * 0.5 ? '⚡ Fast' : d.avg > catMaxAvg * 0.8 ? '🐢 Slow' : '👍 Good';
-                    const dotCls = d.bestProvider === 'iPlusView' ? 'ipv' : d.bestProvider === 'KMM' ? 'kmm' : d.bestProvider === 'Ads4U' ? 'a4u' : d.bestProvider === 'NewLike' ? 'nlk' : 'mlk';
+                    const dotCls = d.bestProvider === 'iPlusView' ? 'ipv' : d.bestProvider === 'KMM' ? 'kmm' : d.bestProvider === 'Ads4U' ? 'a4u' : d.bestProvider === 'NewLike' ? 'nlk' : d.bestProvider === 'MeeLike' ? 'mlk' : 'bee';
                     return `<tr>
                         <td>${catIcons[cat] || '📦'} ${cat}</td>
                         <td>${d.count}</td>
@@ -2868,7 +2912,7 @@
             const trackList = document.getElementById('ds-track-list');
             if (recent.length > 0) {
                 trackList.innerHTML = recent.map(r => {
-                    const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : 'mlk';
+                    const dotCls = r.provider === 'iPlusView' ? 'ipv' : r.provider === 'KMM' ? 'kmm' : r.provider === 'Ads4U' ? 'a4u' : r.provider === 'NewLike' ? 'nlk' : r.provider === 'MeeLike' ? 'mlk' : 'bee';
                     const timeStr = r.status === 'completed' ? formatDuration(r.duration) : '⏳ pending';
                     const timeCls = r.status === 'completed' ? 'ds-fastest' : 'ds-medium';
                     return `<div class="ds-track-item">
@@ -2888,11 +2932,13 @@
             const savedA4u = localStorage.getItem('tb_key_Ads4U');
             const savedNlk = localStorage.getItem('tb_key_NewLike');
             const savedMlk = localStorage.getItem('tb_key_MeeLike');
+            const savedBee = localStorage.getItem('tb_key_BeeTH');
             if (savedIpv) document.getElementById('key-ipv').value = savedIpv;
             if (savedKmm) document.getElementById('key-kmm').value = savedKmm;
             if (savedA4u) document.getElementById('key-a4u').value = savedA4u;
             if (savedNlk) document.getElementById('key-nlk').value = savedNlk;
             if (savedMlk) document.getElementById('key-mlk').value = savedMlk;
+            if (savedBee) document.getElementById('key-bee').value = savedBee;
 
             renderSelected();
             refreshHistory();
@@ -2904,6 +2950,7 @@
             if (savedA4u) loadedProviders.push('Ads4U');
             if (savedNlk) loadedProviders.push('NewLike');
             if (savedMlk) loadedProviders.push('MeeLike');
+            if (savedBee) loadedProviders.push('BeeTH');
 
             setStatus(`Ready | ${loadedProviders.length} Providers loaded: ${loadedProviders.join(', ') || 'None'}`);
             document.getElementById('providerCount').textContent = `Showing 0 services`;
@@ -3193,7 +3240,7 @@
                     }
                 }
 
-                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : 'mlk';
+                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : cls === 'MeeLike' ? 'mlk' : 'bee';
 
                 if (catItems.length === 0) {
                     if (budgetExhausted) {
@@ -3226,7 +3273,7 @@
             if (budget !== Infinity && totalCost < budget - 0.01 && smartPresetResult.length > 0) {
                 let remaining = budget - totalCost;
                 const bonusCats = ['Likes', 'Views', 'Shares', 'Saves'];
-                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : 'mlk';
+                const dotCls = cls => cls === 'iPlusView' ? 'ipv' : cls === 'KMM' ? 'kmm' : cls === 'Ads4U' ? 'a4u' : cls === 'NewLike' ? 'nlk' : cls === 'MeeLike' ? 'mlk' : 'bee';
                 let bonusHtml = '';
                 let bonusCount = 0;
 
