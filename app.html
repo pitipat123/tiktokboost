@@ -528,6 +528,49 @@
             border-color: var(--red);
         }
 
+        .selected-services .sel-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 6px 4px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sel-item .sel-edit-btn {
+            background: rgba(88, 166, 255, 0.15);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            color: var(--blue);
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 3px;
+            transition: all 0.15s;
+        }
+
+        .sel-item .sel-edit-btn:hover {
+            background: rgba(88, 166, 255, 0.3);
+            color: #fff;
+        }
+
+        .sel-item .sel-remove-btn {
+            color: var(--text-muted);
+            cursor: pointer;
+            margin-left: 4px;
+            font-size: 12px;
+            transition: color 0.15s;
+        }
+
+        .sel-item .sel-remove-btn:hover {
+            color: var(--red);
+        }
+
         .preset-btns {
             display: flex;
             gap: 6px;
@@ -1394,7 +1437,7 @@
                 <div class="settings-section">
                     <div class="settings-label">🔄 Application Update</div>
                     <div class="info-box" id="updateInfo">
-                        <p>Current version: <strong style="color:var(--green);">v1.8.1</strong></p>
+                        <p>Current version: <strong style="color:var(--green);">v1.9.0</strong></p>
                         <p id="updateStatusText" style="margin-top:4px;color:var(--text-muted);">Click "Check for
                             Updates" to check the latest version.</p>
                         <div id="updateProgressWrap" style="display:none;margin-top:8px;">
@@ -1710,6 +1753,56 @@
             <div class="modal-btns">
                 <button style="background:var(--green);color:#000;" onclick="qtyConfirm()">✅ OK</button>
                 <button style="background:var(--border);color:var(--text);" onclick="qtyCancel()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Qty Modal -->
+    <div class="modal-overlay" id="editQtyModal">
+        <div class="modal-box" style="min-width:420px;max-width:480px;">
+            <h3>✏️ แก้ไขจำนวน</h3>
+            <!-- Service Details -->
+            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <span class="provider-dot" id="editQtyDot" style="width:8px;height:8px;"></span>
+                    <span style="font-size:12px;font-weight:700;color:var(--text);" id="editQtyProvider"></span>
+                    <span style="font-size:11px;color:var(--text-muted);">Service #<span id="editQtyId"></span></span>
+                </div>
+                <div style="font-size:12px;color:var(--text);margin-bottom:6px;line-height:1.5;" id="editQtyName"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:11px;">
+                    <div><span style="color:var(--text-muted);">💰 ราคา/1K:</span> <strong style="color:var(--orange);" id="editQtyRate"></strong></div>
+                    <div><span style="color:var(--text-muted);">⏱️ เวลาจัดส่ง:</span> <strong style="color:var(--green);" id="editQtyTime"></strong></div>
+                    <div><span style="color:var(--text-muted);">📉 ขั้นต่ำ:</span> <strong id="editQtyMin"></strong></div>
+                    <div><span style="color:var(--text-muted);">📈 สูงสุด:</span> <strong id="editQtyMax"></strong></div>
+                </div>
+                <div id="editQtyDesc" style="font-size:10px;color:var(--text-muted);margin-top:6px;max-height:40px;overflow-y:auto;line-height:1.4;display:none;"></div>
+            </div>
+
+            <!-- Current Qty -->
+            <div style="font-size:12px;margin-bottom:8px;">
+                <span style="color:var(--text-dim);">จำนวนปัจจุบัน:</span>
+                <strong style="color:var(--cyan);font-size:14px;" id="editQtyCurrent"></strong>
+            </div>
+
+            <!-- Quick Select -->
+            <label style="font-size:11px;color:var(--text-dim);">เลือกจำนวน:</label>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 10px;" id="editQtyQuickBtns">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Custom Input -->
+            <label style="font-size:11px;color:var(--text-dim);">หรือกำหนดเอง:</label>
+            <input type="number" id="editQtyInput" placeholder="ใส่จำนวนที่ต้องการ" style="margin-top:4px;" oninput="updateEditQtyPreview()">
+
+            <!-- Preview -->
+            <div style="display:flex;justify-content:space-between;margin-top:8px;padding:8px;background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.2);border-radius:4px;">
+                <span style="font-size:12px;color:var(--text-dim);">💰 ราคารวม:</span>
+                <span style="font-size:14px;font-weight:800;color:var(--green);" id="editQtyCostPreview">0.00 ฿</span>
+            </div>
+
+            <div class="modal-btns" style="margin-top:10px;">
+                <button style="background:var(--green);color:#000;" onclick="editQtyConfirm()">✅ บันทึก</button>
+                <button style="background:var(--border);color:var(--text);" onclick="closeModal('editQtyModal')">ยกเลิก</button>
             </div>
         </div>
     </div>
@@ -2147,18 +2240,29 @@
             }
             let totalCost = 0;
             let totalQty = 0;
-            container.innerHTML = selectedServices.map((s, i) => {
+            // Column header
+            let html = `<div class="sel-header">
+                <span style="flex:1;">บริการ (Service)</span>
+                <span style="width:80px;text-align:center;">จำนวน (Qty)</span>
+                <span style="width:60px;text-align:right;">ราคา (Cost)</span>
+                <span style="width:36px;"></span>
+            </div>`;
+            html += selectedServices.map((s, i) => {
                 const qty = s.qty || 1000;
                 const cost = (qty / 1000) * (s.rate || 0);
                 totalCost += cost;
                 totalQty += qty;
                 return `<div class="sel-item" ondblclick="removeSelected(${i})">
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${s.provider} #${s.id}</span>
-          <span style="color:var(--cyan);font-size:11px;margin:0 6px;">x${qty.toLocaleString()}</span>
-          <span style="color:var(--green);font-size:11px;min-width:60px;text-align:right;">${cost.toFixed(2)} ฿</span>
-          <span style="color:var(--text-muted);margin-left:4px;cursor:pointer;">✕</span>
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;" title="${(s.name || '').replace(/"/g, '&quot;')}">${s.provider} #${s.id}</span>
+          <span style="color:var(--cyan);font-size:11px;width:80px;text-align:center;cursor:pointer;" onclick="editSelectedQty(${i})" title="คลิกเพื่อแก้ไขจำนวน">x${qty.toLocaleString()}</span>
+          <span style="color:var(--green);font-size:11px;width:60px;text-align:right;">${cost.toFixed(2)} ฿</span>
+          <span style="width:36px;display:flex;align-items:center;justify-content:flex-end;gap:2px;">
+            <button class="sel-edit-btn" onclick="event.stopPropagation();editSelectedQty(${i})" title="แก้ไขจำนวน">✏️</button>
+            <span class="sel-remove-btn" onclick="event.stopPropagation();removeSelected(${i})" title="ลบออก">✕</span>
+          </span>
         </div>`;
             }).join('');
+            container.innerHTML = html;
             container.innerHTML += `<div style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px;font-size:12px;">
                 <div style="display:flex;justify-content:space-between;font-weight:700;">
                     <span>📦 ${selectedServices.length} services</span>
@@ -2171,6 +2275,118 @@
                 ${getCategoryBreakdown()}
             </div>`;
             updateBudgetBar(totalCost);
+        }
+
+        let editQtyIndex = -1;
+        let editQtyRate = 0;
+        let editQtyMinVal = 1;
+        let editQtyMaxVal = 10000000;
+
+        function editSelectedQty(index) {
+            const s = selectedServices[index];
+            if (!s) return;
+            editQtyIndex = index;
+
+            const currentQty = s.qty || 1000;
+            const svcInfo = allServices.find(a => String(a.id) === String(s.id) && a.provider === s.provider);
+            editQtyMinVal = svcInfo ? svcInfo.min : 1;
+            editQtyMaxVal = svcInfo ? svcInfo.max : 10000000;
+            editQtyRate = s.rate || 0;
+
+            // Provider dot color
+            const dotCls = s.provider === 'iPlusView' ? 'ipv' : s.provider === 'KMM' ? 'kmm' : s.provider === 'Ads4U' ? 'a4u' : s.provider === 'NewLike' ? 'nlk' : s.provider === 'MeeLike' ? 'mlk' : 'bee';
+            const dotEl = document.getElementById('editQtyDot');
+            dotEl.className = 'provider-dot ' + dotCls;
+            dotEl.style.width = '8px';
+            dotEl.style.height = '8px';
+
+            // Fill details
+            document.getElementById('editQtyProvider').textContent = s.provider;
+            document.getElementById('editQtyId').textContent = s.id;
+            document.getElementById('editQtyName').textContent = s.name || 'N/A';
+            document.getElementById('editQtyRate').textContent = editQtyRate.toFixed(4) + ' ฿';
+            document.getElementById('editQtyTime').textContent = svcInfo ? svcInfo.time : 'N/A';
+            document.getElementById('editQtyMin').textContent = editQtyMinVal.toLocaleString();
+            document.getElementById('editQtyMax').textContent = editQtyMaxVal.toLocaleString();
+            document.getElementById('editQtyCurrent').textContent = currentQty.toLocaleString();
+
+            // Description
+            const descEl = document.getElementById('editQtyDesc');
+            if (svcInfo && svcInfo.desc) {
+                descEl.textContent = svcInfo.desc;
+                descEl.style.display = 'block';
+            } else {
+                descEl.style.display = 'none';
+            }
+
+            // Quick buttons: min, 1k, 5k, 10k, 25k, 50k, 100k, max
+            const quickVals = [editQtyMinVal, 1000, 2000, 5000, 10000, 25000, 50000, 100000, editQtyMaxVal];
+            const uniqueVals = [...new Set(quickVals.filter(v => v >= editQtyMinVal && v <= editQtyMaxVal))].sort((a, b) => a - b);
+            const btnContainer = document.getElementById('editQtyQuickBtns');
+            btnContainer.innerHTML = uniqueVals.map(v => {
+                const label = v === editQtyMinVal ? `Min (${v.toLocaleString()})` : v === editQtyMaxVal ? `Max (${v.toLocaleString()})` : v.toLocaleString();
+                const isActive = v === currentQty;
+                return `<button onclick="editQtyQuickSelect(${v})" style="padding:5px 12px;background:${isActive ? 'var(--accent)' : 'var(--bg-panel)'};border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'};color:${isActive ? '#fff' : 'var(--text)'};border-radius:4px;cursor:pointer;font-weight:600;font-size:11px;transition:all 0.15s;">${label}</button>`;
+            }).join('');
+
+            // Set current value in input
+            document.getElementById('editQtyInput').value = currentQty;
+            updateEditQtyPreview();
+
+            // Show modal
+            document.getElementById('editQtyModal').classList.add('show');
+            // Focus input
+            setTimeout(() => document.getElementById('editQtyInput').select(), 100);
+        }
+
+        function editQtyQuickSelect(val) {
+            document.getElementById('editQtyInput').value = val;
+            updateEditQtyPreview();
+            // Highlight active button
+            const btns = document.getElementById('editQtyQuickBtns').querySelectorAll('button');
+            btns.forEach(btn => {
+                const btnVal = parseInt(btn.textContent.replace(/[^0-9]/g, ''));
+                if (btnVal === val) {
+                    btn.style.background = 'var(--accent)';
+                    btn.style.borderColor = 'var(--accent)';
+                    btn.style.color = '#fff';
+                } else {
+                    btn.style.background = 'var(--bg-panel)';
+                    btn.style.borderColor = 'var(--border)';
+                    btn.style.color = 'var(--text)';
+                }
+            });
+        }
+
+        function updateEditQtyPreview() {
+            const qty = parseInt(document.getElementById('editQtyInput').value) || 0;
+            const cost = (qty / 1000) * editQtyRate;
+            document.getElementById('editQtyCostPreview').textContent = cost.toFixed(2) + ' ฿';
+        }
+
+        function editQtyConfirm() {
+            if (editQtyIndex < 0 || !selectedServices[editQtyIndex]) return;
+            const s = selectedServices[editQtyIndex];
+            const currentQty = s.qty || 1000;
+            const newQty = parseInt(document.getElementById('editQtyInput').value) || 0;
+
+            if (newQty <= 0) {
+                alert('❌ จำนวนไม่ถูกต้อง');
+                return;
+            }
+            if (newQty < editQtyMinVal) {
+                alert(`⚠️ จำนวนต่ำกว่าขั้นต่ำ (${editQtyMinVal.toLocaleString()})`);
+                return;
+            }
+            if (newQty > editQtyMaxVal) {
+                alert(`⚠️ จำนวนเกินสูงสุด (${editQtyMaxVal.toLocaleString()})`);
+                return;
+            }
+
+            selectedServices[editQtyIndex].qty = newQty;
+            renderSelected();
+            closeModal('editQtyModal');
+            log(`✏️ แก้ไขจำนวน ${s.provider} #${s.id}: ${currentQty.toLocaleString()} → ${newQty.toLocaleString()}`, 'ok');
         }
 
         function getCategoryBreakdown() {
